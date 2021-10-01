@@ -1,0 +1,33 @@
+14-09 19:57 Not enough tokens to make order
+14-09 19:59 bought
+14-09 19:59 bought0.033
+14-09 20:0 bought 0.026 BNB
+14-09 20:0 Error: Request failed with status code 400
+14-09 20:2 Error: Request failed with status code 400
+14-09 20:3 Account has insufficient balance for requested action.
+14-09 20:5 Account has insufficient balance for requested action.
+14-09 20:6 Account has insufficient balance for requested action.
+14-09 20:6 Account has insufficient balance for requested action.
+14-09 20:6 Account has insufficient balance for requested action.
+14-09 20:7 Account has insufficient balance for requested action.
+14-09 20:7 Account has insufficient balance for requested action.
+14-09 20:7 Account has insufficient balance for requested action.
+14-09 20:9 Account has insufficient balance for requested action.
+14-09 20:11 SELL0.395 BNB
+14-09 20:12 Not enough tokens to make order
+14-09 20:12 Invalid quantity.
+14-09 20:12 BUY0.100 BNB
+14-09 20:13 BUY0.080 BNB
+14-09 20:14 BUY 0.064 BNB
+14-09 20:36 BUY 0.052 BNB
+14-09 20:36 SELL 0.295 BNB
+14-09 20:49 Not enough tokens to make order
+14-09 20:49 Invalid quantity.
+14-09 20:50 Not enough tokens to make order
+14-09 20:50 Invalid quantity.
+14-09 20:50 Not enough tokens to make order
+14-09 20:50 Invalid quantity.
+14-09 20:51 Not enough tokens to make order
+14-09 20:51 Invalid quantity.
+24-09 12:31 Not enough tokens to make order
+24-09 12:31 Invalid API-key, IP, or permissions for action.

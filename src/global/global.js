@@ -1,0 +1,2 @@
+global.tradingCoins = []
+global.signalCoins = []
