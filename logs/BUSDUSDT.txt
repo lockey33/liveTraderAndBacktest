@@ -1,0 +1,10 @@
+08-10 10:40 BUY 32 undefined
+08-10 10:44 SELL 31 undefined
+08-10 10:44 BUY 31 undefined
+08-10 10:45 SELL 62 undefined
+08-10 10:45 BUY 29 undefined
+08-10 10:46 SELL 91 undefined
+08-10 10:46 BUY 28 undefined
+08-10 10:46 SELL 119 undefined
+08-10 10:47 SELL 119 undefined
+08-10 10:47 SELL 145 undefined

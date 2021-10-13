@@ -24,7 +24,7 @@ const safeRequest = async (functionName, params) => {
     return response
   }catch(err){
     console.log(err)
-    console.log(err.response.status)
+    //console.log(err.response.status)
     const retryAfter = (err.response.status === 429 ? 20 : 300)
     if (err.response.status === 429 || err.response.status === 418) {
       console.log("retry", functionName)

@@ -5,9 +5,11 @@ const exchangeValidation = require('../../validations/exchange.validation');
 const exchangeController = require('../../controllers/exchange.controller');
 
 const router = express.Router();
-
+router.route('/exchangeinfos').get(auth('exchangeinfos'), exchangeController.getExchangeInfos);
 router.route('/rankedtokens').get(auth('rankedtokens'), exchangeController.getRankedTokens);
 router.route('/account').get(auth('account'), exchangeController.getAccount);
+router.route('/getAllPrice').get(auth('getAllPrice'), exchangeController.getAllPrice);
+router.route('/getActualCoins').get(auth('getActualCoins'), exchangeController.getActualCoins);
 router.route('/account/:asset').get(auth('asset'), exchangeController.getAsset);
 router.route('/time').get(auth('time'), exchangeController.getBinanceTime);
 
@@ -19,6 +21,7 @@ router.route('/pair/order').post(auth('newOrder'), validate(exchangeValidation.n
 
 router.route('/pair/backtest').get(auth('backTest'), validate(exchangeValidation.backTest), exchangeController.backTest);
 
+router.route('/pair/findBestParameters').post(auth('findBestParameters'), validate(exchangeValidation.findBestParameters), exchangeController.findBestParameters);
 router
   .route('/pair/livetrading')
   .post(auth('livetrading'), validate(exchangeValidation.liveTrading), exchangeController.liveTrading);

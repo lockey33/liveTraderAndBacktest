@@ -1,0 +1,33 @@
+07-10 15:28 BUY 620.2 STPT
+07-10 15:28 BUY 496.1 STPT
+07-10 15:28 BUY 496.1 STPT
+07-10 15:28 SELL 1612.3 STPT
+07-10 15:28 Account has insufficient balance for requested action.
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional
+07-10 15:28 Not enough tokens to make order
+07-10 15:28 minNotional

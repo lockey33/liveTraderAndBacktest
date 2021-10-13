@@ -5,16 +5,19 @@ const getLatestCoinMarketCap = async() => {
   const apiKey = 'ac8ce2bb-5321-47a7-915f-c672af08819e';
   let results = null;
   try{
-    results = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=ac8ce2bb-5321-47a7-915f-c672af08819e&start=1&limit=200')
+    results = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=ac8ce2bb-5321-47a7-915f-c672af08819e&start=1&limit=4000')
     results = results.data.data;
-    let withoutStable = []
+    let filtered = []
     results.map((result) => {
-      if(!(result.tags.indexOf('stablecoin') > -1)){
-        withoutStable.push(result)
+      if(!(result.tags.indexOf('stablecoin') > -1) && result.symbol.includes('DOWN') === false && result.symbol.includes('UP') === false){
+        filtered.push(result)
       }
+
     })
-    results = withoutStable
+    results = filtered
+    //console.log(filtered)
   }catch(err){
+    console.log(err)
     results = err.response.data;
   }
   return results;
@@ -25,7 +28,7 @@ const getTradable = async(coinMarketCapList, binanceList) => {
   coinMarketCapList.map((coinMarketCapCurrency) => {
     const coinMarketCapPair = coinMarketCapCurrency.symbol + "USDT";
     binanceList.map((binanceCurrency) => {
-      if(binanceCurrency.symbol === coinMarketCapPair){
+      if(binanceCurrency.symbol === coinMarketCapPair && binanceCurrency.status === "TRADING"){
         const currencyObject = {pair: binanceCurrency.symbol, asset1: binanceCurrency.baseAsset, asset2: binanceCurrency.quoteAsset}
         tradableList.push(currencyObject)
       }

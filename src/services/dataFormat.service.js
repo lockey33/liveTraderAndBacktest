@@ -49,7 +49,7 @@ const formatSocketCandle = async (data) => {
     open: data.k.o,
     high: data.k.h,
     low: data.k.l,
-    close: data.k.l,
+    close: data.k.c,
     volume: data.k.v,
     closeTime: moment(data.k.T).format('DD-MM-YYYY HH:mm')
   }

@@ -8,16 +8,14 @@ const launch = async () => {
   rankedTokens = rankedTokens.data.result
   for (const token of rankedTokens) {
     const params = {
-      interval: '1M',
+      interval: '8h_4h',
       limit: '400',
       realTrading: "0",
       formatIndex: '1',
       asset1: token.asset1,
       asset2: token.asset2,
       signals: '1',
-      spacing: '1',
-      oneOrderSignalPassed: '1',
-      strategy: 'superTrendStrategy'
+      strategy: 'multiIntervalFind'
     }
     const liveSignal = await axios.post('http://localhost:3000/v1/exchange/pair/sockettrading', params)
   }
@@ -25,7 +23,7 @@ const launch = async () => {
 
 
 launch().then(() => {
-    console.log("launched");
+  console.log("launched");
 
-  });
+});
 

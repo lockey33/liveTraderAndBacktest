@@ -57,19 +57,19 @@ const superTrendEMAStrategy = async (candles, params) => {
 const multiIntervalStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   const allCandles = await dataManager.applyIndicators(candles, indicatorsToApply)
-  //console.table(allCandles["15m"],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+  //console.table(allCandles["5m"],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+  console.table(allCandles["1m"],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
   let intervals = Object.keys(candles)
   const balance = initBalance(candles[intervals[0]], params)
   const initialPairBalance = balance.initialPairBalance
   let newPairBalance = balance.newPairBalance
-
+  newPairBalance.buyAtStart = params.buyAtStart
   if (intervals.length > 1) {
     if (!params.startTime) {
       console.log("Please provide startTime")
       return "Please provide startTime"
     }
   }
-
   let firstIntervalCandles = candles[intervals[0]]
 
   firstIntervalCandles.map((candle, index) => {
@@ -92,29 +92,26 @@ const multiIntervalStrategy = async (candles, params) => {
                 iterationParams[interval].push({supertrend: candleOfInterval.supertrend, openTime: candleOfInterval.openTime, closeTime: candleOfInterval.closeTime, index: index})
                 const upperIntervalCandle = iterationParams[iterationUpperInterval]
                 const previousCandle = (candles[interval][index - 1] ? candles[interval][index - 1] : null)
+
                 //console.log('previous', previousCandle.openTime, previousCandle.supertrend, upperIntervalCandle.supertrend)
                 //console.log('current', candleOfInterval.openTime, candleOfInterval.supertrend, upperIntervalCandle.supertrend)
                 if (previousCandle) {
                   //console.log(upperIntervalCandle.openTime, upperIntervalCandle.supertrend, candleOfInterval.openTime, candleOfInterval.supertrend, previousCandle.supertrend, index)
-                  if (candleOfInterval.supertrend === 1 && upperIntervalCandle.supertrend === 1 && newPairBalance.inPosition === 0) {
-                    console.log("BUY", candleOfInterval.openTime, upperIntervalCandle.openTime)
+                  //console.log(candleOfInterval)
+                  //console.log(upperIntervalCandle)
+                  let clean = cleanIndicators(candle, upperIntervalCandle);
+                  if (candleOfInterval.supertrend === 1 && upperIntervalCandle.supertrend === 1 && newPairBalance.inPosition === 0 && clean) {
                     newPairBalance.inPosition = 1;
                     buy(initialPairBalance, newPairBalance, candleOfInterval)
                   }
-                  if (candleOfInterval.supertrend === 0 && previousCandle.supertrend !== candleOfInterval.supertrend && newPairBalance.inPosition === 1) {
-                    console.log("SELL", candleOfInterval.openTime, upperIntervalCandle.openTime)
+                  if (candleOfInterval.supertrend === 0 && previousCandle.supertrend !== candleOfInterval.supertrend && newPairBalance.inPosition === 1 && clean) {
+                    //console.log("SELL", candleOfInterval.openTime, upperIntervalCandle.openTime)
                     newPairBalance.inPosition = 0;
                     sell(initialPairBalance, newPairBalance, candleOfInterval)
                   }
                 }
                 if (index === candles[interval].length - 1) {
                   sell(initialPairBalance, newPairBalance, candleOfInterval)
-                }
-                if(params.takeProfit){
-                  enableTakeProfit(params, initialPairBalance, newPairBalance, candleOfInterval)
-                }
-                if(params.stopLoss){
-                  enableStopLoss(params, initialPairBalance, newPairBalance, candleOfInterval)
                 }
                 //console.log(iterationParams)
               }
@@ -132,6 +129,15 @@ const multiIntervalStrategy = async (candles, params) => {
   return newPairBalance
 };
 
+
+const cleanIndicators = (candle, upperCandle) =>{
+  //console.log(upperCandle.openTime, upperCandle.lowerband)
+  if(!isNaN(candle.atr) && !isNaN(candle.lowerband) && !isNaN(candle.upperband)){
+    return true
+  }else{
+    return false
+  }
+}
 const tripleSuperTrendStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [12, 3, 'supertrend1']},{functionName: "superTrend", params: [11, 2, 'supertrend2']}, {functionName: "superTrend", params: [10, 1, 'supertrend3']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply)
@@ -145,6 +151,7 @@ const tripleSuperTrendStrategy = async (candles, params) => {
       return "Please provide startTime"
     }
   }
+  params.i = 0;
   //le dernier interval (le plus petit) est pris par défaut pour les calculs d'achats/ventes
   for(const interval of intervals) {
     let candlesForInterval = candles[interval]
@@ -153,6 +160,7 @@ const tripleSuperTrendStrategy = async (candles, params) => {
     candlesForInterval.map((candle, index) => {
       const currentCandle = candle;
       const previousCandle = candlesForInterval[index - 1];
+      //buy(initialPairBalance, newPairBalance, currentCandle)
       if (previousCandle) {
         if ((currentCandle.supertrend1 === 1)
           && (currentCandle.supertrend2 === 1)
@@ -205,7 +213,6 @@ const superTrendStrategy = async (candles, params) => {
       const previousCandle = candlesForInterval[index - 1];
 
       if (previousCandle) {
-        console.log(currentCandle.openTime, currentCandle.supertrend, previousCandle.openTime, previousCandle.supertrend)
         if (currentCandle.supertrend === 1 && previousCandle.supertrend !== currentCandle.supertrend && interval === intervals[intervals.length - 1]) {
           buy(initialPairBalance, newPairBalance, currentCandle)
         }
@@ -272,7 +279,10 @@ const enableStopLoss = (params, initialPairBalance, newPairBalance, currentCandl
 }
 
 const buy = (initialPairBalance, newPairBalance, candle) => {
-  const buyAmount = parseFloat(newPairBalance.asset2.free) / candle.close; // valeur de mes BUSD /  valeur du close price BNB
+  let buyAmount = parseFloat(newPairBalance.asset2.free) / candle.close; // valeur de mes BUSD /  valeur du close price BNB
+  let fee = (buyAmount * 0.001).toFixed(4);
+  buyAmount = buyAmount - fee
+
   if (buyAmount !== 0) {
     const type = "BUY";
     logsManager.logBuyAndSell(type,candle,buyAmount,newPairBalance)
@@ -286,7 +296,10 @@ const buy = (initialPairBalance, newPairBalance, candle) => {
 }
 
 const sell = (initialPairBalance, newPairBalance, candle) => {
-  const sellAmount = candle.close * parseFloat(newPairBalance.asset1.free); // valeur du BNB * balance actuel en BNB
+  let sellAmount = candle.close * parseFloat(newPairBalance.asset1.free); // valeur du BNB * balance actuel en BNB
+  let fee = (sellAmount * 0.001).toFixed(4);
+  sellAmount = sellAmount - fee
+
   if (sellAmount !== 0) {
     const type = "SELL";
     const winningTrade = (sellAmount < newPairBalance.asset2.previous ? false : true)
@@ -301,7 +314,7 @@ const sell = (initialPairBalance, newPairBalance, candle) => {
 
 const initBalance = (candles, params) => {
 
-  const initialPairBalance = {asset1: {asset:params.asset1, free: 0, locked: 0}, asset2:{asset:params.asset2, free: 500, locked:0}}
+  const initialPairBalance = {asset1: {asset:params.asset1, free: 0, locked: 0}, asset2:{asset:params.asset2, free: 50, locked:0}}
 
   if (params.asset1Balance) {
     initialPairBalance.asset1.free = parseFloat(params.asset1Balance);

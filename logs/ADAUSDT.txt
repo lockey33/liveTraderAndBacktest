@@ -1,1 +1,4 @@
 15-09 18:17 BUY 4.5 ADA
+08-10 11:20 BUY 8.0 ADA
+09-10 21:15 minNotional
+09-10 21:18 minNotional

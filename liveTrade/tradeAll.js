@@ -4,20 +4,22 @@ const path = require('path');
 const appDir = path.resolve('./');
 
 const launch = async () => {
-  let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
-  rankedTokens = rankedTokens.data.result
+  let rankedTokens = [
+      {asset1: "RARE", asset2: "USDT", interval:  '5m_1m'},
+    ]
   for (const token of rankedTokens) {
     const params = {
-      interval: '1M',
+      interval: token.interval,
       limit: '400',
-      realTrading: "0",
+      realTrading: "1",
       formatIndex: '1',
       asset1: token.asset1,
       asset2: token.asset2,
-      signals: '1',
-      spacing: '1',
-      oneOrderSignalPassed: '1',
-      strategy: 'superTrendStrategy'
+      signals: '0',
+      strategy: 'multiIntervalStrategy',
+      spacing: "20",
+      oneOrderSignalPassed : "1",
+      waitForClose: "1"
     }
     const liveSignal = await axios.post('http://localhost:3000/v1/exchange/pair/sockettrading', params)
   }

@@ -48,7 +48,7 @@ const showResults = (initialPairBalance, newPairBalance) => {
   newPairBalance.loseTrades = newPairBalance.totalTrades - newPairBalance.wonTrades;
   newPairBalance.tradeWinRate = ((newPairBalance.wonTrades / newPairBalance.totalTrades) * 100).toFixed(2)
   newPairBalance = calculate.avgResults(newPairBalance)
-  console.log('Profit :', newPairBalance.profit, '%', 'Won trades :', numberWin, '/', newPairBalance.trades.length / 2, 'Win rate:', newPairBalance.tradeWinRate, '%');
+  console.log(initialPairBalance.asset1.asset, 'Profit :', newPairBalance.profit, '%', 'Won trades :', numberWin, '/', newPairBalance.trades.length / 2, 'Win rate:', newPairBalance.tradeWinRate, '%');
   return newPairBalance
 }
 

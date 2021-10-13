@@ -7,17 +7,20 @@ const getAccount = async () => {
   return account.data;
 };
 
+
 const checkPosition = async(params, requirements, inPosition = "0", lastPrice) => {
+  let pair = params.asset1 + params.asset2
+  pair = pair.toUpperCase()
   if (params.signals !== "1") {
     const pairBalance = await getPairBalance({asset1: params.asset1, asset2: params.asset2});
+
     let minNotional =  lastPrice * pairBalance.asset1.free
-    console.log(minNotional, requirements)
     if (pairBalance.asset1.free > requirements.minQty && minNotional > requirements.minNotional) {
       inPosition = "1";
-      console.log("IN POSITION")
+      console.log("IN POSITION" , pair, params.interval)
+    }else{
+      inPosition = params.inPosition
     }
-    //console.log(pairBalance, requirements, inPosition, lastPrice)
-
     return { inPosition: inPosition, pairBalance: pairBalance }
   }
 }

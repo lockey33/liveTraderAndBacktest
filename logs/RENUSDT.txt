@@ -1,0 +1,7 @@
+02-10 19:47 BUY 16 REN
+02-10 19:47 Not enough tokens to make order
+02-10 19:47 minNotional
+02-10 19:47 Invalid side.
+02-10 20:12 SELL 15 REN
+02-10 20:12 Not enough tokens to make order
+02-10 20:12 minNotional

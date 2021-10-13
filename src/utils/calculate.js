@@ -50,9 +50,10 @@ const avgResults = (balance) => {
   })
   balance.totalLose = totalLose
   balance.totalProfit = totalProfit
-  balance.avgLose = (totalLose / balance.loseTrades).toFixed(2)
+  balance.avgLose = (balance.totalLose === 0 ? 0 : (totalLose / balance.loseTrades).toFixed(2))
   balance.avgProfit = (totalProfit / balance.wonTrades).toFixed(2)
   balance.riskReward = '1:' + (balance.avgProfit / balance.avgLose).toFixed(1);
+
   return balance
 }
 

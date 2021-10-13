@@ -38,6 +38,12 @@ const backTest = {
   }),
 };
 
+const findBestParameters = {
+  body: Joi.object().keys({
+    data: Joi.array().required()
+  }),
+};
+
 const liveTrading = {
   body: Joi.object().keys({
     interval: Joi.string().required(),
@@ -65,6 +71,10 @@ const socketTrading = {
     asset2Balance: Joi.string(),
     signals: Joi.string().required(),
     strategy: Joi.string().required(),
+    realTrading: Joi.string().required(),
+    spacing: Joi.string().required(),
+    oneOrderSignalPassed: Joi.string().required(),
+    waitForClose: Joi.string().required()
   }),
 };
 
@@ -82,6 +92,7 @@ module.exports = {
   getAsset,
   getHistoricalData,
   backTest,
+  findBestParameters,
   liveTrading,
   socketTrading,
   newOrder,

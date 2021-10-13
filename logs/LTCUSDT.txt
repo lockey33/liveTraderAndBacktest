@@ -1,2 +1,20 @@
 29-09 18:21 BUY 0.133 LTC
 29-09 18:30 SELL 0.132 LTC
+02-10 19:47 minNotional
+02-10 19:47 BUY 0.095 LTC
+02-10 19:48 minNotional
+02-10 19:48 BUY 0.076 LTC
+02-10 19:51 minNotional
+02-10 19:51 BUY 0.060 LTC
+02-10 19:54 minNotional
+02-10 19:54 Filter failure: MIN_NOTIONAL
+02-10 20:2 minNotional
+02-10 20:2 minNotional
+02-10 20:3 minNotional
+02-10 20:3 minNotional
+02-10 20:3 minNotional
+02-10 20:8 minNotional
+02-10 20:9 minNotional
+02-10 20:10 Illegal characters found in parameter 'quantity'; legal range is '^([0-9]{1,20})(\.[0-9]{1,20})?$'.
+02-10 20:11 SELL 0.231 LTC
+09-10 21:4 BUY 0.204 LTC
