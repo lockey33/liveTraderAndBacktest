@@ -53,12 +53,27 @@ const superTrendEMAStrategy = async (candles, params) => {
 };
 
 
+const manageBackTestEntry = async(candles, params) => {
+  let intervals = Object.keys(candles)
+  let newCandlesByInterval = []
+  intervals.map((interval) => {
+    let newCandlesDataForInterval = []
+    candles[interval].map((candle) => {
+      if(!isNaN(candle.supertrend)){
+        newCandlesDataForInterval.push(candle)
+      }
+    })
+    newCandlesDataForInterval[interval] = newCandlesDataForInterval
+  })
+  console.table(newCandlesByInterval["4h"])
+  return newCandlesByInterval
+}
+
 
 const multiIntervalStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   const allCandles = await dataManager.applyIndicators(candles, indicatorsToApply)
   //console.table(allCandles["5m"],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-  console.table(allCandles["1m"],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
   let intervals = Object.keys(candles)
   const balance = initBalance(candles[intervals[0]], params)
   const initialPairBalance = balance.initialPairBalance
@@ -70,8 +85,9 @@ const multiIntervalStrategy = async (candles, params) => {
       return "Please provide startTime"
     }
   }
-  let firstIntervalCandles = candles[intervals[0]]
+  //console.table(allCandles[intervals[intervals.length - 1]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
 
+  let firstIntervalCandles = candles[intervals[0]]
   firstIntervalCandles.map((candle, index) => {
       const firstIntervalCandle = candle;
       let iterationParams = []
@@ -82,7 +98,6 @@ const multiIntervalStrategy = async (candles, params) => {
 
           if(iterationUpperInterval !== interval){
             iterationParams[interval] = []
-
             for(const [index, candleOfInterval] of candles[interval].entries()){
 
               const actualCandleClose = moment(candleOfInterval.closeTime, 'DD-MM-YYYY hh:mm')
@@ -90,6 +105,7 @@ const multiIntervalStrategy = async (candles, params) => {
               const previousIntervalClose = moment(params.closeTime, 'DD-MM-YYYY hh:mm')
               if(actualCandleClose.isBetween(previousIntervalOpen, previousIntervalClose) || actualCandleClose.isSame(previousIntervalClose)){
                 iterationParams[interval].push({supertrend: candleOfInterval.supertrend, openTime: candleOfInterval.openTime, closeTime: candleOfInterval.closeTime, index: index})
+                const previousUpperIntervalCandle = iterationParams[iterationUpperInterval] - 1
                 const upperIntervalCandle = iterationParams[iterationUpperInterval]
                 const previousCandle = (candles[interval][index - 1] ? candles[interval][index - 1] : null)
 

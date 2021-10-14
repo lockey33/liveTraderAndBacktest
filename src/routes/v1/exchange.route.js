@@ -20,7 +20,7 @@ router
 router.route('/pair/order').post(auth('newOrder'), validate(exchangeValidation.newOrder), exchangeController.newOrder);
 
 router.route('/pair/backtest').get(auth('backTest'), validate(exchangeValidation.backTest), exchangeController.backTest);
-
+router.route('/pair/tradeBestTokens').post(auth('tradeBestTokens'), validate(exchangeValidation.tradeBestTokens), exchangeController.tradeBestTokens);
 router.route('/pair/findBestParameters').post(auth('findBestParameters'), validate(exchangeValidation.findBestParameters), exchangeController.findBestParameters);
 router
   .route('/pair/livetrading')

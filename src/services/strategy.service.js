@@ -54,7 +54,7 @@ const superTrendEMAStrategy = async (candles, params) => {
 
 const superTrendStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
-  candles = await dataManager.applyIndicators(candles, indicatorsToApply)
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
 
   let pair = params.asset1 + params.asset2
   pair = pair.toUpperCase()
@@ -137,7 +137,7 @@ const superTrendStrategy = async (candles, params) => {
 const multiIntervalStrategy = async (candles, params, actualInterval) => {
 
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
-  candles = await dataManager.applyIndicators(candles, indicatorsToApply)
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
   let pair = params.asset1 + params.asset2
   pair = pair.toUpperCase()
   let intervals = Object.keys(candles)
@@ -160,13 +160,13 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
 
     if (
         (currentCandle.supertrend === 1 &&
-          previousCandle.supertrend !== currentCandle.supertrend)
+          previousCandle.supertrend !== currentCandle.supertrend && currentUpperIntervalCandle.supertrend === 1)
       ) {
-          console.log(params.asset1, params.signals,params.inPosition, currentUpperIntervalCandle.supertrend, params.oneOrderSignalPassed )
           if (params.signals === "1" && params.inPosition === "0") {
             params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
-            console.table(candlesForInterval,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-          } else if (params.signals === "0" && params.inPosition === "0" && currentUpperIntervalCandle.supertrend === 1 && params.oneOrderSignalPassed === "1") {
+            console.log(params.asset1, params.signals,params.inPosition, currentUpperIntervalCandle.supertrend, params.oneOrderSignalPassed )
+            console.table(candlesForInterval,[params.asset1, 'openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+          } else if (params.signals === "0" && params.inPosition === "0"  && params.oneOrderSignalPassed === "1") {
             params = await makeOrder(params, currentCandle, actualInterval)
             params.oneOrderSignalPassed = "1"
           }
@@ -176,10 +176,10 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
         (currentCandle.supertrend === 0 &&
           previousCandle.supertrend !== currentCandle.supertrend)
       ) {
-          console.log(params.asset1, params.signals,params.inPosition, params.oneOrderSignalPassed )
           if (params.signals === "1" && params.inPosition === "1") {
+            console.log(params.asset1, params.signals,params.inPosition, params.oneOrderSignalPassed )
             params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
-            console.table(candlesForInterval,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+            console.table(candlesForInterval,[params.asset1, 'openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
           } else if (params.signals === "0" && params.inPosition === "1" && params.oneOrderSignalPassed === "1") {
             params = await makeOrder(params, currentCandle, actualInterval)
             console.log("changed")
@@ -253,7 +253,7 @@ const makeOrder = async (params, currentCandle, actualInterval) => {
 
 const superTrendFind = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
-  candles = await dataManager.applyIndicators(candles, indicatorsToApply)
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
 
   let pair = params.asset1 + params.asset2
   pair = pair.toUpperCase()
@@ -300,7 +300,7 @@ const superTrendFind = async (candles, params) => {
 const multiIntervalFind = async (candles, params) => {
 
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
-  candles = await dataManager.applyIndicators(candles, indicatorsToApply)
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
   let pair = params.asset1 + params.asset2
   pair = pair.toUpperCase()
   let intervals = Object.keys(candles)

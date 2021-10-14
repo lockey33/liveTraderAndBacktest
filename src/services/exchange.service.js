@@ -12,7 +12,7 @@ const requestManager = require('../utils/requestManager');
 const wallet = require('../services/wallet.service');
 const order = require('../services/order.service');
 const backTesting = require('../services/backTesting.service');
-
+const calculate = require('../utils/calculate');
 const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
 const getHistoricalData = async (params) => {
@@ -21,15 +21,13 @@ const getHistoricalData = async (params) => {
   params.startTime = (params.startTime ? await dataFormater.formatDate(params.startTime) : null)
   params.endTime = (params.endTime ? await dataFormater.formatDate(params.endTime) : null)
   params.inPosition = "0";
+
   if(params.interval.includes("_")){
     let intervals = params.interval.split("_")
 
     for(const interval of intervals){
       if(params.candleFusion === '1'){
-          let newParams = JSON.parse(JSON.stringify(params))
-          //newParams.startTime = moment(params.startTime).subtract(400, "days")
-          //newParams.startTime = moment(newParams.startTime).valueOf()
-          candles[interval] = await getCandlesUntilDate(newParams, pair, interval)
+          candles[interval] = await getCandlesUntilDate(params, pair, interval)
       }else{
         candles[interval] = await requestManager.safeRequest("klines", [pair, interval, {startTime: params.startTime, limit: params.limit} ]);
         candles[interval] = candles[interval].data
@@ -40,6 +38,10 @@ const getHistoricalData = async (params) => {
           params.inPosition = checkPosition.inPosition
           params.pairBalance = checkPosition.pairBalance
         }
+      }
+      if(params.waitForClose === "1"){
+        candles[interval].pop()
+        //console.table(candles[interval]);
       }
     }
   }else{
@@ -57,7 +59,10 @@ const getHistoricalData = async (params) => {
       }
 
     }
-
+    if(params.waitForClose === "1"){
+      console.log('BIM')
+      candles[params.interval].pop()
+    }
   }
 
 
@@ -117,7 +122,7 @@ const listenToSocket = async (pair, params, dataWithIndicators, targetInterval) 
   params.i = 0;
   params.pair = pair.toUpperCase()
   dataWithIndicators[targetInterval][dataWithIndicators[targetInterval].length - 1].liveCandle = "1"
-  console.log("Listening to :", pair.toUpperCase(), targetInterval)
+  console.log("Listening to :", pair.toUpperCase(), targetInterval, "real :", params.realTrading, "signals :", params.signals, "waitForClose", params.waitForClose, "oneOrderSignalPassed", params.oneOrderSignalPassed)
   socket.onmessage = async(event) => {
     let data = JSON.parse(event.data);
     const results = await manageLastCandle(dataWithIndicators, params, data, targetInterval)
@@ -136,13 +141,13 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
   //console.log(params.i, targetInterval)
   if(params.waitForClose === "1"){
     const formatedCandle = await dataFormater.formatSocketCandle(actualCandle);
-    if(formatedCandle.openTime !== candles[candles.length - 1].openTime){ //si la dernière candle a une date différente de la nouvelle, on push
+    if(actualCandle.k.x === true){
       console.log("candle closed", formatedCandle.openTime, formatedCandle.closeTime, params.pair)
       candles.push(formatedCandle)
       dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
       candles = dataWithIndicators.candles[targetInterval]
+      //console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
       params = dataWithIndicators.params
-      //console.log(params)
     }
   }else{
     if(params.i % parseInt(params.spacing) === 0){
@@ -202,17 +207,92 @@ const getBinanceTime = async (data) => {
 
 const backTest = async (coin) => {
   const candles = await getHistoricalData(coin);
-  console.log(candles)
   const results = await backTesting[coin.strategy](candles, coin);
   const pair = results.asset1.asset + results.asset2.asset;
-  let filteredResults = {pair: pair, profit: results.profit, amount: results.asset2.free, winRate: results.tradeWinRate, riskReward: results.riskReward, totalLose: results.totalLose.toFixed(2), totalProfit: results.totalProfit.toFixed(2), avgLose: results.avgLose, avgProfit: results.avgProfit}
+  let filteredResults = {asset1: results.asset1.asset, asset2: results.asset2.asset, pair: pair, profit: results.profit, amount: results.asset2.free, winRate: results.tradeWinRate, riskReward: results.riskReward, totalLose: results.totalLose.toFixed(2), totalProfit: results.totalProfit.toFixed(2), avgLose: results.avgLose, avgProfit: results.avgProfit}
 
   return filteredResults
 
 }
 
+const getAllBackTestResults = async (coinList, params) => {
+
+  let backTestResults = []
+  let finalCapital = 0;
+  let initialCapital = 50 * coinList.length;
+
+  for(const coin of coinList){
+    const uniqueParams = JSON.parse(JSON.stringify(params))
+    uniqueParams.asset1 = coin.asset1
+    uniqueParams.asset2 = coin.asset2
+    let filteredResult = await backTest(uniqueParams)
+    finalCapital += filteredResult.amount
+    backTestResults.push(filteredResult)
+  }
+  let finalProfit = calculate.calculateDifference(initialCapital, finalCapital)
+
+  let globalWinRate = 0
+  let averageLose = 0
+  let averageProfit = 0
+
+  backTestResults.map((result) => {
+    globalWinRate += parseFloat(result.winRate)
+    averageLose += parseFloat(result.avgLose)
+    averageProfit += parseFloat(result.avgProfit)
+  })
+  const coinNumbers = backTestResults.length
+  globalWinRate = globalWinRate / coinNumbers
+  averageLose =  averageLose / coinNumbers
+  averageProfit =  averageProfit / coinNumbers
+
+  backTestResults.sort(function (a, b) {
+    return b.profit - a.profit;
+  });
+  console.table(backTestResults)
+  console.log("Profit total", finalProfit, "%")
+  console.log("WinRate Global", globalWinRate + "%")
+  console.log("Average Lose", averageLose + "%")
+  console.log("Average Profit", averageProfit + "%")
+  console.log("Final :", finalCapital)
+
+  return backTestResults
+}
+
+const getBestTokens = async(tokens, params) => {
+  let backTestResults = await getAllBackTestResults(tokens, params)
+  let bestTokens = []
+
+  backTestResults.map((result) => {
+    if(parseFloat(result.profit) > params.minimumProfit){
+      bestTokens.push(result)
+    }
+  })
+  let finalCapital = 0;
+  let initialCapital = 50 * bestTokens.length;
+  let globalWinRate = 0;
+
+  let bestPairs = []
+
+  bestTokens.map((token) => {
+    bestPairs.push(token.pair)
+    finalCapital += parseFloat(token.amount)
+    globalWinRate += parseFloat(token.winRate)
+  })
+  globalWinRate = globalWinRate / bestTokens.length
+
+  let finalProfit = calculate.calculateDifference(initialCapital, finalCapital)
+  console.log("Profit total", finalProfit, "%")
+  console.log("WinRate Global", globalWinRate + "%")
+  console.log("Final :", finalCapital)
+
+  return bestTokens
+}
+
+
 
 module.exports = {
+  getAllBackTestResults,
+  getBestTokens,
   getHistoricalData,
   getSocketData,
   getExchangeInfos,

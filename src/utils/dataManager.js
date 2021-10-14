@@ -16,6 +16,25 @@ const candleProcessed = (data, index) => {
   return data
 }
 
+const manageBlackList = (blackList, actualCoins, rankedTokens) => {
+  for(const actualCoin of actualCoins){
+    let found = false
+
+    rankedTokens.map((coin, index) => {
+      if(coin.pair === actualCoin.pair){
+        found = true
+      }
+      if(blackList.includes(coin.pair)){
+        rankedTokens.splice(index, 1)
+      }
+    })
+    if(!found){
+      rankedTokens.push(actualCoin)
+    }
+  }
+  return rankedTokens
+}
+
 applyIndicators = async(allCandles, indicators) => {
   let intervals = Object.keys(allCandles)
   for(const interval of intervals){
@@ -28,6 +47,7 @@ applyIndicators = async(allCandles, indicators) => {
 }
 
 module.exports = {
+  manageBlackList,
   highest,
   lowest,
   candleProcessed,

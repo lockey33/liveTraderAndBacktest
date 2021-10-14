@@ -5,12 +5,12 @@ const appDir = path.resolve('./');
 
 const launch = async () => {
   const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
-  //let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
+  let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
-  //rankedTokens = rankedTokens.data.result
-  //rankedTokens = rankedTokens.slice(0,100)
-  let rankedTokens =
+  rankedTokens = rankedTokens.data.result
+  rankedTokens = rankedTokens.slice(0,100)
+  /*let rankedTokens =
     [
       {pair: 'BTCUSDT', asset1: 'BTC', asset2: 'USDT'},
       {pair: 'ETHUSDT', asset1: 'ETH', asset2: 'USDT'},
@@ -297,9 +297,9 @@ const launch = async () => {
       {pair: 'EPSUSDT', asset1: 'EPS', asset2: 'USDT'},
       {pair: 'TCTUSDT', asset1: 'TCT', asset2: 'USDT'},
       {pair: 'CVCUSDT', asset1: 'CVC', asset2: 'USDT'}
-    ]
+    ]*/
   const blackList = ["PERPUSDT", "RAREUSDT", "REQUSDT", "UMAUSDT", "SUSHIUSDT", "XECUSDT", "XEMUSDT", "FLOWUSDT", "BTCSTUSDT", "SHIBUSDT"]
-  const customInterval = "5m_1m";
+  const customInterval = "4h_1h";
 
   for(const actualCoin of actualCoins){
     let found = false
@@ -320,10 +320,10 @@ const launch = async () => {
 
   for (const token of rankedTokens) {
     const params = {
-      interval: '5m_1m',
+      interval: '8h_4h',
       limit: '1000',
-      realTrading: "0",
-      signals: '1',
+      realTrading: "1",
+      signals: '0',
       formatIndex: '1',
       asset1: token.asset1,
       asset2: token.asset2,

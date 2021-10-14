@@ -2,7 +2,6 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const appDir = path.resolve('./');
-
 const launch = async () => {
   //let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   //rankedTokens = rankedTokens.data.result
@@ -296,26 +295,22 @@ const launch = async () => {
     ]
 
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  let coinList = []
-  for (const token of rankedTokens) {
-    const params = {
-      interval: '1d_12h',
-      limit: '1000',
-      realTrading: "0",
-      signals: '1',
-      formatIndex: '1',
-      asset1: token.asset1,
-      asset2: token.asset2,
-      strategy: 'multiIntervalStrategy',
-      startTime: "01-04-2021 00:00",
-      endTime: "12-10-2021 2:00",
-      candleFusion: "1",
-      buyAtStart: "0",
-    }
-    coinList.push(params)
+  const params = {
+    interval: '8h_4h',
+    limit: '1000',
+    realTrading: "0",
+    signals: '1',
+    formatIndex: '1',
+    strategy: 'multiIntervalStrategy',
+    startTime: "15-05-2021 00:00",
+    endTime: "13-10-2021 2:00",
+    candleFusion: "1",
+    buyAtStart: "0",
   }
-  coinList = coinList.slice(0, 100)
-  const backTestAll = await axios.post('http://localhost:3000/v1/exchange/pair/findBestParameters', {data: coinList})
+
+  rankedTokens = rankedTokens.slice(0,100)
+
+  const backTestAll = await axios.post('http://localhost:3000/v1/exchange/pair/findBestParameters', {data: rankedTokens, params})
 
 }
 

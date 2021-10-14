@@ -44,45 +44,13 @@ const backTest = catchAsync(async (req, res) => {
 
 const findBestParameters = catchAsync(async(req, res) => {
   const coinList = req.body.data
-  req.body.realTrading = "0"
+  const params = req.body.params
 
-  let backTestResults = []
-  let finalCapital = 0;
-  let initialCapital = 50 * coinList.length;
-
-  for(const coin of coinList){
-    let filteredResult = await exchange.backTest(coin)
-    finalCapital += filteredResult.amount
-    backTestResults.push(filteredResult)
-  }
-  let finalProfit = calculate.calculateDifference(initialCapital, finalCapital)
-
-  let globalWinRate = 0
-  let averageLose = 0
-  let averageProfit = 0
-
-  backTestResults.map((result) => {
-    globalWinRate += parseFloat(result.winRate)
-    averageLose += parseFloat(result.avgLose)
-    averageProfit += parseFloat(result.avgProfit)
-  })
-  const coinNumbers = backTestResults.length
-  globalWinRate = globalWinRate / coinNumbers
-  averageLose =  averageLose / coinNumbers
-  averageProfit =  averageProfit / coinNumbers
-
-  backTestResults.sort(function (a, b) {
-    return b.profit - a.profit;
-  });
-  console.table(backTestResults)
-  console.log("Profit total", finalProfit, "%")
-  console.log("WinRate Global", globalWinRate + "%")
-  console.log("Average Lose", averageLose + "%")
-  console.log("Average Profit", averageProfit + "%")
-  console.log("Final :", finalCapital)
+  let backTestResults = await exchange.getAllBackTestResults(coinList, params)
   res.send(backTestResults)
 
 })
+
 
 const liveTrading = catchAsync(async (req, res) => {
   try{
@@ -94,6 +62,37 @@ const liveTrading = catchAsync(async (req, res) => {
     res.send({data: err});
   }
 });
+
+const tradeBestTokens = catchAsync(async(req, res) => {
+  const coinList = req.body.data
+  const params = req.body.params
+  const customCoins = req.body.customCoins
+
+  let bestTokens = await exchange.getBestTokens(coinList, params)
+
+  for(const token of bestTokens) {
+    let uniqueParams = JSON.parse(JSON.stringify(params))
+    uniqueParams.asset1 = token.asset1
+    uniqueParams.asset2 = token.asset2
+    if(customCoins.some(c => c.asset1 === token.asset1)){
+      let index = customCoins.map(e => e.asset1).indexOf(token.asset1);
+      uniqueParams.interval = customCoins[index].interval
+    }
+    delete uniqueParams.startTime
+    delete uniqueParams.endTime
+    delete uniqueParams.candleFusion
+    uniqueParams.oneOrderSignalPassed = "1"
+    uniqueParams.waitForClose = "1"
+
+    let candles = await exchange.getHistoricalData(uniqueParams);
+    let intervals = Object.keys(candles);
+    if(candles[intervals[0]].length > 20) {
+      const socketData = await exchange.getSocketData(uniqueParams, candles)
+    }
+  }
+
+  res.send("Smart trading launched")
+})
 
 const getAllPrice = catchAsync(async (req, res) => {
   try{
@@ -181,6 +180,7 @@ module.exports = {
   getHistoricalData,
   backTest,
   findBestParameters,
+  tradeBestTokens,
   liveTrading,
   socketTrading,
   getBinanceTime,

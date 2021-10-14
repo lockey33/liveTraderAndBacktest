@@ -40,7 +40,16 @@ const backTest = {
 
 const findBestParameters = {
   body: Joi.object().keys({
-    data: Joi.array().required()
+    data: Joi.array().required(),
+    params: Joi.object().required(),
+  }),
+};
+
+const tradeBestTokens = {
+  body: Joi.object().keys({
+    data: Joi.array().required(),
+    params: Joi.object().required(),
+    customCoins: Joi.array()
   }),
 };
 
@@ -92,6 +101,7 @@ module.exports = {
   getAsset,
   getHistoricalData,
   backTest,
+  tradeBestTokens,
   findBestParameters,
   liveTrading,
   socketTrading,
