@@ -1,0 +1,2 @@
+18-10 17:5 Not enough tokens to make order
+18-10 17:5 minNotional

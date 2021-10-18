@@ -1,1 +1,5 @@
 06-10 17:43 BUY 29.7 MINA
+18-10 16:43 Not enough tokens to make order
+18-10 16:43 minNotional
+18-10 16:48 Not enough tokens to make order
+18-10 16:48 minNotional

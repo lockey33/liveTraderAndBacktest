@@ -49,7 +49,8 @@ const tradeBestTokens = {
   body: Joi.object().keys({
     data: Joi.array().required(),
     params: Joi.object().required(),
-    customCoins: Joi.array()
+    customCoins: Joi.array(),
+    actualCoins: Joi.array()
   }),
 };
 

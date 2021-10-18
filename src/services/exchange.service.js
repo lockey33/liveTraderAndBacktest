@@ -13,6 +13,8 @@ const wallet = require('../services/wallet.service');
 const order = require('../services/order.service');
 const backTesting = require('../services/backTesting.service');
 const calculate = require('../utils/calculate');
+const logsManager = require('../utils/logsManager');
+const coinInfos = require('../services/coinInfos.service');
 const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
 const getHistoricalData = async (params) => {
@@ -33,7 +35,7 @@ const getHistoricalData = async (params) => {
         candles[interval] = candles[interval].data
         candles[interval] = await dataFormater.formatAllCandles(candles[interval]);
         if(!params.realTrading) {
-          const requirements = await order.getRequirements(params.asset1+params.asset2)
+          const requirements = await coinInfos.getRequirements(params.asset1+params.asset2)
           const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[interval][candles[interval].length - 1].close)
           params.inPosition = checkPosition.inPosition
           params.pairBalance = checkPosition.pairBalance
@@ -52,7 +54,7 @@ const getHistoricalData = async (params) => {
       candles[params.interval] = candles[params.interval].data;
       candles[params.interval] = await dataFormater.formatAllCandles(candles[params.interval]);
       if(!params.realTrading){
-        const requirements = await order.getRequirements(params.asset1+params.asset2)
+        const requirements = await coinInfos.getRequirements(params.asset1+params.asset2)
         const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.interval][candles[params.interval].length - 1].close)
         params.inPosition = checkPosition.inPosition
         params.pairBalance = checkPosition.pairBalance
@@ -60,7 +62,6 @@ const getHistoricalData = async (params) => {
 
     }
     if(params.waitForClose === "1"){
-      console.log('BIM')
       candles[params.interval].pop()
     }
   }
@@ -74,11 +75,14 @@ const getCandlesUntilDate = async (params, pair, interval) => {
   let candles = await requestManager.safeRequest("klines", [pair, interval, {startTime: params.startTime, limit: params.limit} ]);
   candles = candles.data
   candles = await dataFormater.formatAllCandles(candles);
+  let startDate = moment(params.startTime)
   let lastDate = candles[candles.length - 1].openTime
+
   lastDate = moment(lastDate, "DD-MM-YYYY hh:mm")
   let lastTime = moment(lastDate).valueOf()
   let requiredDate = moment(params.endTime)
-  while(!moment(lastDate).isSameOrAfter(moment(requiredDate))){
+
+  while(!moment(lastDate).isSameOrAfter(moment(requiredDate)) && moment(lastDate).isBetween(moment(startDate), moment(requiredDate))){
     let newCandles = await requestManager.safeRequest("klines", [pair, interval, {startTime: lastTime, limit: params.limit} ]);
     newCandles = newCandles.data
     newCandles = await dataFormater.formatAllCandles(newCandles);
@@ -88,7 +92,7 @@ const getCandlesUntilDate = async (params, pair, interval) => {
     lastDate = candles[candles.length - 1].openTime
     lastDate = moment(lastDate, "DD-MM-YYYY hh:mm")
     lastTime = moment(lastDate).valueOf()
-    //console.log(moment(lastDate).format("DD-MM-YYYY hh:mm"))
+    console.log(moment(lastDate).format("DD-MM-YYYY hh:mm"))
   }
   return candles
 }
@@ -143,11 +147,14 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
     const formatedCandle = await dataFormater.formatSocketCandle(actualCandle);
     if(actualCandle.k.x === true){
       console.log("candle closed", formatedCandle.openTime, formatedCandle.closeTime, params.pair)
+
       candles.push(formatedCandle)
       dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
       candles = dataWithIndicators.candles[targetInterval]
       //console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
       params = dataWithIndicators.params
+      const fileName = `${params.asset1}${params.asset2}`;
+      logsManager.writeLogs(fileName, JSON.stringify(candles));
     }
   }else{
     if(params.i % parseInt(params.spacing) === 0){
@@ -209,7 +216,7 @@ const backTest = async (coin) => {
   const candles = await getHistoricalData(coin);
   const results = await backTesting[coin.strategy](candles, coin);
   const pair = results.asset1.asset + results.asset2.asset;
-  let filteredResults = {asset1: results.asset1.asset, asset2: results.asset2.asset, pair: pair, profit: results.profit, amount: results.asset2.free, winRate: results.tradeWinRate, riskReward: results.riskReward, totalLose: results.totalLose.toFixed(2), totalProfit: results.totalProfit.toFixed(2), avgLose: results.avgLose, avgProfit: results.avgProfit}
+  let filteredResults = {asset1: results.asset1.asset, asset2: results.asset2.asset, pair: pair, profit: results.profit, amount: results.asset2.free,best: results.best, winRate: results.tradeWinRate, minimumWinRate: results.minimumWinRate, totalLose: results.totalLose.toFixed(2), totalProfit: results.totalProfit.toFixed(2), avgLose: results.avgLose, avgProfit: results.avgProfit}
 
   return filteredResults
 
@@ -249,6 +256,7 @@ const getAllBackTestResults = async (coinList, params) => {
     return b.profit - a.profit;
   });
   console.table(backTestResults)
+  console.log("Initial capital", initialCapital)
   console.log("Profit total", finalProfit, "%")
   console.log("WinRate Global", globalWinRate + "%")
   console.log("Average Lose", averageLose + "%")
@@ -258,15 +266,22 @@ const getAllBackTestResults = async (coinList, params) => {
   return backTestResults
 }
 
+
+
 const getBestTokens = async(tokens, params) => {
   let backTestResults = await getAllBackTestResults(tokens, params)
   let bestTokens = []
 
-  backTestResults.map((result) => {
-    if(parseFloat(result.profit) > params.minimumProfit){
+  for(result of backTestResults){
+
+    if(parseFloat(result.profit) > params.minimumProfit && result.best === "1"){
       bestTokens.push(result)
+    }else{
+      if(result.inPosition === true){
+        await order.newOrder({side: "SELL", type: "MARKET"}, {asset1: result.asset1, asset2: result.asset2, inPosition: "1"})
+      }
     }
-  })
+  }
   let finalCapital = 0;
   let initialCapital = 50 * bestTokens.length;
   let globalWinRate = 0;
@@ -281,12 +296,16 @@ const getBestTokens = async(tokens, params) => {
   globalWinRate = globalWinRate / bestTokens.length
 
   let finalProfit = calculate.calculateDifference(initialCapital, finalCapital)
+
+  console.log("Initial capital", initialCapital)
   console.log("Profit total", finalProfit, "%")
   console.log("WinRate Global", globalWinRate + "%")
   console.log("Final :", finalCapital)
 
   return bestTokens
 }
+
+
 
 
 

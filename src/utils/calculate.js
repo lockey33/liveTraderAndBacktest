@@ -48,12 +48,17 @@ const avgResults = (balance) => {
       }
     }
   })
-  balance.totalLose = totalLose
+  balance.totalLose = Math.abs(totalLose)
   balance.totalProfit = totalProfit
   balance.avgLose = (balance.totalLose === 0 ? 0 : (totalLose / balance.loseTrades).toFixed(2))
+  balance.avgLose = (balance.avgLose < 0 ? Math.abs(balance.avgLose) : balance.avgLose);
   balance.avgProfit = (totalProfit / balance.wonTrades).toFixed(2)
-  balance.riskReward = '1:' + (balance.avgProfit / balance.avgLose).toFixed(1);
-
+  balance.avgProfit = (balance.avgProfit === "NaN" ? 0 : balance.avgProfit)
+  balance.minimumWinRate = (parseFloat(balance.avgLose) / (balance.avgProfit)).toFixed(2) * 100
+  balance.minimumWinRate = parseFloat(balance.minimumWinRate).toFixed(2)
+  balance.minimumWinRate = (balance.minimumWinRate < 0 ? Math.abs(balance.minimumWinRate) : balance.minimumWinRate);
+  balance.minimumWinRate = parseFloat(balance.minimumWinRate) + 20
+  balance.best = (parseFloat(balance.tradeWinRate) > parseFloat(balance.minimumWinRate) ? "1" : "0")
   return balance
 }
 

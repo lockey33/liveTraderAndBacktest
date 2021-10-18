@@ -1,2 +1,4 @@
 07-10 13:12 SELL 476.2 ONE
 08-10 11:17 BUY 107.8 ONE
+18-10 17:5 Not enough tokens to make order
+18-10 17:5 minNotional

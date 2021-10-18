@@ -3,3 +3,5 @@
 29-09 18:19 Invalid quantity.
 29-09 18:19 Not enough tokens to make order
 29-09 18:19 Invalid quantity.
+18-10 17:5 Not enough tokens to make order
+18-10 17:5 minNotional

@@ -5,7 +5,6 @@ const appDir = path.resolve('./');
 const calculate = require('./calculate');
 
 const writeLogs = (fileName, content) => {
-  console.log(fileName, content)
   const filePath = `${appDir}/logs/${fileName}.txt`;
   const data = moment().format('DD-MM HH:m') + ' ' + content.toString() + '\n';
   fs.writeFile(filePath, data, { flag: 'a+' }, (err) => {

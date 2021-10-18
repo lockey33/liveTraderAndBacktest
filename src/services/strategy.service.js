@@ -10,7 +10,7 @@ const superTrendEMAStrategy = async (candles, params) => {
   candles = await indicators.EMA(candles, 200);
   console.table(candles, ['openTime', 'open', 'closeTime', 'close', 'supertrend', 'ema']);
 
-  const requirements = await order.getRequirements(params.asset1 + params.asset2)
+  const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
   const currentCandle = candles[candles.length - 1];
   const previousCandle = candles[candles.length - 2];
   let pairBalance = null
@@ -61,7 +61,7 @@ const superTrendStrategy = async (candles, params) => {
 
   if (params.i === 1 && params.signals === "0") {
     console.log('params', params)
-    const requirements = await order.getRequirements(params.asset1 + params.asset2)
+    const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
     const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.targetInterval][candles[params.targetInterval].length - 1].close)
     console.log('check', checkPosition)
     params.inPosition = checkPosition.inPosition
@@ -92,7 +92,7 @@ const superTrendStrategy = async (candles, params) => {
         });
 
         await telegram.sendMessage('BUY ', params.asset1 + params.asset2)
-        const requirements = await order.getRequirements(params.asset1 + params.asset2)
+        const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
         const checkPosition = await wallet.checkPosition(params, requirements, params.inPosition, currentCandle.close)
         params.pairBalance = checkPosition.pairBalance
         params.inPosition = "1";
@@ -119,7 +119,7 @@ const superTrendStrategy = async (candles, params) => {
           inPosition: params.inPosition
         });
         await telegram.sendMessage('SELL ', params.asset1 + params.asset2)
-        const requirements = await order.getRequirements(params.asset1 + params.asset2)
+        const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
         const checkPosition = await wallet.checkPosition(params, requirements, params.inPosition, currentCandle.close)
         params.pairBalance = checkPosition.pairBalance
       }
@@ -142,13 +142,15 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
   pair = pair.toUpperCase()
   let intervals = Object.keys(candles)
   const upperIntervalCandles = candles[intervals[0]]
-  //console.log("Itération :", params.i)
+  console.log("Itération :", params.i)
 
   if (params.lowestInterval === actualInterval) {
 
-    if(params.waitForClose === "0"){
-      params = await managePosition(params, candles, actualInterval)
-    }
+  /*
+      if(params.waitForClose === "0"){
+        params = await managePosition(params, candles, actualInterval)
+      }
+  */
 
     let candlesForInterval = candles[actualInterval]
 
@@ -157,33 +159,28 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
     const currentUpperIntervalCandle = upperIntervalCandles[upperIntervalCandles.length - 1]
     //console.log(pair, "position", params.inPosition, "previousTrend", previousCandle.supertrend, "currentTrend", currentCandle.supertrend, "currentUpperTrend", currentUpperIntervalCandle.supertrend)
 
-
     if (
         (currentCandle.supertrend === 1 &&
           previousCandle.supertrend !== currentCandle.supertrend && currentUpperIntervalCandle.supertrend === 1)
       ) {
+          console.log("SuperTrend UP",  params.asset1 + params.asset2, "position", params.inPosition)
           if (params.signals === "1" && params.inPosition === "0") {
             params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
-            console.log(params.asset1, params.signals,params.inPosition, currentUpperIntervalCandle.supertrend, params.oneOrderSignalPassed )
-            console.table(candlesForInterval,[params.asset1, 'openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-          } else if (params.signals === "0" && params.inPosition === "0"  && params.oneOrderSignalPassed === "1") {
+          } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
             params = await makeOrder(params, currentCandle, actualInterval)
-            params.oneOrderSignalPassed = "1"
           }
+          params.oneOrderSignalPassed = "1"
       }
 
       if (
         (currentCandle.supertrend === 0 &&
           previousCandle.supertrend !== currentCandle.supertrend)
       ) {
+          console.log("SuperTrend Down",  params.asset1 + params.asset2, "position", params.inPosition, currentCandle.supertrend, previousCandle.supertrend)
           if (params.signals === "1" && params.inPosition === "1") {
-            console.log(params.asset1, params.signals,params.inPosition, params.oneOrderSignalPassed )
             params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
-            console.table(candlesForInterval,[params.asset1, 'openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-          } else if (params.signals === "0" && params.inPosition === "1" && params.oneOrderSignalPassed === "1") {
+          } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
             params = await makeOrder(params, currentCandle, actualInterval)
-            console.log("changed")
-            params.oneOrderSignalPassed = "1"
           }
           params.oneOrderSignalPassed = "1"
       }
@@ -199,7 +196,7 @@ const managePosition = async (params, candles, actualInterval) => {
 
 
   if (params.i === parseInt(params.spacing) && params.signals === "0") {
-    const requirements = await order.getRequirements(params.asset1 + params.asset2)
+    const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
     const checkPosition = await wallet.checkPosition(params, requirements, "0", currentCandle.close)
     params.inPosition = checkPosition.inPosition
     if(params.inPosition === "1"){
@@ -231,21 +228,24 @@ const sendSignal = async (params, text) => {
 
 const makeOrder = async (params, currentCandle, actualInterval) => {
   let side = "BUY";
+  let tokenInPosition = false;
 
-  if (params.inPosition === "1") {
-    console.log("selling now")
-    side = "SELL"
-  }
-    let orderParams = {
-      side: side,
-      type: 'MARKET'
+  let allTokensInPosition = await wallet.getActualCoins()
+
+  allTokensInPosition.map((token) => {
+    if(token.asset1 === params.asset1){
+      tokenInPosition = true;
+      console.log(token)
+      side = "SELL"
     }
-    params = await order.newOrder(orderParams, params, actualInterval);
-    const requirements = await order.getRequirements(params.asset1 + params.asset2)
-    const checkPosition = await wallet.checkPosition(params, requirements, params.inPosition, currentCandle.close)
-    params.inPosition = (params.inPosition === "1" ? params.inPosition = "0" : params.inPosition = "1")
-    params.pairBalance = checkPosition.pairBalance
+  })
 
+  let orderParams = {
+    side: side,
+    type: 'MARKET'
+  }
+
+  params = await order.newOrder(orderParams, params, actualInterval);
 
   return params
 }
@@ -260,7 +260,7 @@ const superTrendFind = async (candles, params) => {
 
   if (params.i === 1 && params.signals === "0") {
     console.log('params', params)
-    const requirements = await order.getRequirements(params.asset1 + params.asset2)
+    const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
     const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.targetInterval][candles[params.lowestInterval].length - 1].close)
     console.log('check', checkPosition)
     params.inPosition = checkPosition.inPosition
@@ -307,7 +307,7 @@ const multiIntervalFind = async (candles, params) => {
   const upperIntervalCandles = candles[intervals[0]]
 
   if (params.i === 1 && params.signals === "0") {
-    const requirements = await order.getRequirements(params.asset1 + params.asset2)
+    const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
     const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.lowestInterval][candles[params.lowestInterval].length - 1].close)
     params.inPosition = checkPosition.inPosition
   }

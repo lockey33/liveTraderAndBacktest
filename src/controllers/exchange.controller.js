@@ -6,6 +6,7 @@ const strategy = require('../services/strategy.service');
 const backTesting = require('../services/backTesting.service');
 const discover = require('../services/discover.service');
 const calculate = require('../utils/calculate');
+const coinInfos = require('../services/coinInfos.service');
 // const clientTest = new Spot(apiKey, apiSecret, { baseURL: 'https://testnet.binance.vision'});
 const getAccount = catchAsync(async (req, res) => {
   const account = await wallet.getAccount();
@@ -63,11 +64,25 @@ const liveTrading = catchAsync(async (req, res) => {
   }
 });
 
+
 const tradeBestTokens = catchAsync(async(req, res) => {
-  const coinList = req.body.data
+  let coinList = req.body.data
   const params = req.body.params
   const customCoins = req.body.customCoins
+  const actualCoins = req.body.actualCoins
 
+  actualCoins.map((actualCoin) => {
+    let foundCoin = false;
+    coinList.map((coin) => {
+      if(actualCoin.asset1 === coin.asset1){
+        coin.inPosition = true
+        foundCoin = true
+      }
+    })
+    if(foundCoin === false){
+      coinList.push(actualCoin)
+    }
+  })
   let bestTokens = await exchange.getBestTokens(coinList, params)
 
   for(const token of bestTokens) {
@@ -94,9 +109,10 @@ const tradeBestTokens = catchAsync(async(req, res) => {
   res.send("Smart trading launched")
 })
 
+
 const getAllPrice = catchAsync(async (req, res) => {
   try{
-    const prices = await order.getAllPrice();
+    const prices = await coinInfos.getAllPrice();
     res.send({ prices });
   }catch(err){
     console.log(err);
@@ -106,34 +122,8 @@ const getAllPrice = catchAsync(async (req, res) => {
 
 const getActualCoins = catchAsync(async (req, res) => {
   try{
-    const prices = await order.getAllPrice();
-    let account = await wallet.getAccount();
-    let balances = account.balances
-    let allTokens = []
-    for(const balance of balances){
-      balance.pair = balance.asset + "USDT";
-    }
-    for(const price of prices){
-      for(const balance of balances){
-        if(balance.pair === price.symbol){
-          let newObject = balance
-          newObject.price = price.price
-          allTokens.push(newObject)
-        }
-      }
-    }
-    let tokenInPosition = []
-    //console.log(allTokens)
-    for(const token of allTokens){
-      let minNotional =  token.price * token.free
-      let requirements = await order.getRequirements(token.pair);
-      if(!token.asset.includes("BUSD")){
-        if (token.free > requirements.minQty && minNotional > requirements.minNotional) {
-          tokenInPosition.push({pair: token.pair,asset1: token.asset, asset2: "USDT"} )
-        }
-      }
-    }
-    //console.log(tokenInPosition)
+    let tokenInPosition = await wallet.getActualCoins()
+    //console.log(tokenInPosition.length)
     res.send(tokenInPosition);
   }catch(err){
     console.log(err);

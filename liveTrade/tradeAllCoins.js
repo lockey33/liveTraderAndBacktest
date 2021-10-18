@@ -5,12 +5,12 @@ const appDir = path.resolve('./');
 
 const launch = async () => {
   const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
-  let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
+  //let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
-  rankedTokens = rankedTokens.data.result
-  rankedTokens = rankedTokens.slice(0,100)
-  /*let rankedTokens =
+  //rankedTokens = rankedTokens.data.result
+  //rankedTokens = rankedTokens.slice(0,100)
+  let rankedTokens =
     [
       {pair: 'BTCUSDT', asset1: 'BTC', asset2: 'USDT'},
       {pair: 'ETHUSDT', asset1: 'ETH', asset2: 'USDT'},
@@ -297,7 +297,7 @@ const launch = async () => {
       {pair: 'EPSUSDT', asset1: 'EPS', asset2: 'USDT'},
       {pair: 'TCTUSDT', asset1: 'TCT', asset2: 'USDT'},
       {pair: 'CVCUSDT', asset1: 'CVC', asset2: 'USDT'}
-    ]*/
+    ]
   const blackList = ["PERPUSDT", "RAREUSDT", "REQUSDT", "UMAUSDT", "SUSHIUSDT", "XECUSDT", "XEMUSDT", "FLOWUSDT", "BTCSTUSDT", "SHIBUSDT"]
   const customInterval = "4h_1h";
 
@@ -320,7 +320,7 @@ const launch = async () => {
 
   for (const token of rankedTokens) {
     const params = {
-      interval: '8h_4h',
+      interval: '5m_1m',
       limit: '1000',
       realTrading: "1",
       signals: '0',
@@ -333,9 +333,9 @@ const launch = async () => {
       waitForClose: "1"
     }
 
-    if(token.asset1 === "BTC" || token.asset1 === "ETH"){
+/*    if(token.asset1 === "BTC" || token.asset1 === "ETH"){
       params.interval = customInterval
-    }
+    }*/
 
     const liveSignal = await axios.post('http://localhost:3000/v1/exchange/pair/sockettrading', params)
   }

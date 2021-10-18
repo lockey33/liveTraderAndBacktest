@@ -18,3 +18,8 @@
 02-10 20:10 Illegal characters found in parameter 'quantity'; legal range is '^([0-9]{1,20})(\.[0-9]{1,20})?$'.
 02-10 20:11 SELL 0.231 LTC
 09-10 21:4 BUY 0.204 LTC
+18-10 15:29 SELL 0.097 LTC
+18-10 15:48 SELL 0.097 LTC
+18-10 15:54 SELL 0.097 LTC
+18-10 17:5 Not enough tokens to make order
+18-10 17:5 minNotional

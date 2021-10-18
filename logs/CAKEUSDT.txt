@@ -1,2 +1,4 @@
 15-09 17:40 BUY 1.13 CAKE
 09-10 21:18 minNotional
+18-10 17:5 Not enough tokens to make order
+18-10 17:5 minNotional

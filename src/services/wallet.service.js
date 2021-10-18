@@ -1,5 +1,5 @@
+const coinInfos = require('./coinInfos.service');
 const requestManager = require('../utils/requestManager');
-const exchangeInfos = require('../../static/exchange.json');
 
 const getAccount = async () => {
   const options = {recvWindow: 60000}
@@ -44,20 +44,46 @@ const getPairBalance = async (assets) => {
   const assetsBalance = { asset1, asset2 };
   return assetsBalance;
 };
-const getPairInfos = async (pair) => {
-  let data = {};
-  exchangeInfos.map((pairData) => {
-    if (pairData.symbol === pair) {
-      data = pairData;
+
+
+const getActualCoins = async() => {
+  const prices = await coinInfos.getAllPrice();
+  let account = await getAccount();
+  let balances = account.balances
+
+  let allTokens = []
+  for(const balance of balances){
+    balance.pair = balance.asset + "USDT";
+  }
+  for(const price of prices){
+    for(const balance of balances){
+      if(balance.pair === price.symbol){
+        let newObject = balance
+        newObject.price = price.price
+        allTokens.push(newObject)
+      }
     }
-  });
-  return data;
-};
+  }
+  let tokenInPosition = []
+  //console.log(allTokens)
+  for(const token of allTokens){
+    let minNotional =  token.price * token.free
+    let requirements = await coinInfos.getRequirements(token.pair);
+    if(!token.asset.includes("BUSD")){
+      if (token.free > requirements.minQty && minNotional > requirements.minNotional) {
+        tokenInPosition.push({pair: token.pair,asset1: token.asset, asset2: "USDT", inPosition: true} )
+      }
+    }
+  }
+  return tokenInPosition;
+}
+
+
 
 module.exports = {
+  getActualCoins,
   checkPosition,
   getPairBalance,
   getAccount,
   getAsset,
-  getPairInfos,
 };

@@ -1,1 +1,3 @@
 09-10 21:4 minNotional
+18-10 17:5 Not enough tokens to make order
+18-10 17:5 minNotional

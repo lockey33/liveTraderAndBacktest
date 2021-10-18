@@ -1,6 +1,6 @@
 const {Spot} = require('@binance/connector');
 const logsManager = require('../utils/logsManager');
-const exchange = require('./exchange.service');
+const coinInfos = require('./coinInfos.service');
 const wallet = require('./wallet.service');
 const config = require('../config/config');
 const dataFormater = require('./dataFormat.service');
@@ -12,39 +12,13 @@ const getPrice = async (pair) => {
   return parseFloat(price.data.price);
 };
 
-const getAllPrice = async () => {
-  const prices = await client.tickerPrice();
-  return prices.data;
-};
-
-const getRequirements = async (pair) => {
-  const pairInfos = await wallet.getPairInfos(pair);
-  let requirements = null;
-  pairInfos.filters.map((filter) => {
-    if (filter.filterType === 'LOT_SIZE') {
-      requirements = filter;
-      requirements.minQty = parseFloat(requirements.minQty);
-      requirements.stepSize = parseFloat(requirements.stepSize);
-    }
-    if (filter.filterType === "MIN_NOTIONAL") {
-      if (requirements !== null) {
-        requirements.minNotional = parseFloat(filter.minNotional)
-      } else {
-        requirements = filter;
-        requirements.minNotional = parseFloat(requirements.minNotional)
-      }
-    }
-  });
-  return requirements;
-}
-
 
 const getOrderValue = async (side, pairBalance, price, pair) => {
   const buyPourcentage = 0.1;
   const sellPourcentage = 1;
 
   let orderValue = null;
-  let requirements = await getRequirements(pair);
+  let requirements = await coinInfos.getRequirements(pair);
   const decimalPosition = requirements.stepSize.toString().indexOf('1');
   let results = {}
 
@@ -84,18 +58,15 @@ const newOrder = async (orderParams, globalParams) => {
   const fileName = pair;
 
   try {
+    //await telegram.sendMessage(orderParams.side + " " + pair)
     const pairBalance = await wallet.getPairBalance({asset1: globalParams.asset1, asset2: globalParams.asset2});
     const price = await getPrice(pair);
     const orderObject = await getOrderValue(orderParams.side, pairBalance, price, pair);
     if (!orderObject.err) {
 
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
+      await client.newOrder(pair, orderParams.side, orderParams.type, options);
 
-      if (orderParams.side === "BUY" && globalParams.inPosition === "0") {
-        await client.newOrder(pair, orderParams.side, orderParams.type, options);
-      } else if (orderParams.side === "SELL" && globalParams.inPosition === "1") {
-        await client.newOrder(pair, orderParams.side, orderParams.type, options);
-      }
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
 
@@ -114,8 +85,6 @@ const newOrder = async (orderParams, globalParams) => {
 };
 
 module.exports = {
-  getAllPrice,
   getOrderValue,
-  getRequirements,
   newOrder,
 };
