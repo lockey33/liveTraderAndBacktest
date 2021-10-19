@@ -71,7 +71,7 @@ const newOrder = async (orderParams, globalParams) => {
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
 
     } else {
-      await telegram.sendMessage("Order error : " + orderObject.err.toString() + " " + pair.toUpperCase())
+      await telegram.sendMessage(orderParams.side.toUpperCase() + " error : " + orderObject.err.toString() + " " + pair.toUpperCase())
     }
 
   } catch (err) {

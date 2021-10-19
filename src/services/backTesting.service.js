@@ -85,7 +85,7 @@ const multiIntervalStrategy = async (candles, params) => {
       return "Please provide startTime"
     }
   }
-  //console.table(allCandles[intervals[intervals.length - 1]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+    //console.table(allCandles[intervals[intervals.length - 1]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
 
   let firstIntervalCandles = candles[intervals[0]]
   firstIntervalCandles.map((candle, index) => {

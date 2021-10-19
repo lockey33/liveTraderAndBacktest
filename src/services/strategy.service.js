@@ -135,7 +135,6 @@ const superTrendStrategy = async (candles, params) => {
 
 
 const multiIntervalStrategy = async (candles, params, actualInterval) => {
-
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
   let pair = params.asset1 + params.asset2
@@ -167,7 +166,8 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
           if (params.signals === "1" && params.inPosition === "0") {
             params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
           } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-            params = await makeOrder(params, currentCandle, actualInterval)
+            console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+            params = await makeOrder("BUY", params, currentCandle, actualInterval)
           }
           params.oneOrderSignalPassed = "1"
       }
@@ -180,7 +180,8 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
           if (params.signals === "1" && params.inPosition === "1") {
             params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
           } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-            params = await makeOrder(params, currentCandle, actualInterval)
+            console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+            params = await makeOrder("SELL", params, currentCandle, actualInterval)
           }
           params.oneOrderSignalPassed = "1"
       }
@@ -226,19 +227,7 @@ const sendSignal = async (params, text) => {
   return params
 }
 
-const makeOrder = async (params, currentCandle, actualInterval) => {
-  let side = "BUY";
-  let tokenInPosition = false;
-
-  let allTokensInPosition = await wallet.getActualCoins()
-
-  allTokensInPosition.map((token) => {
-    if(token.asset1 === params.asset1){
-      tokenInPosition = true;
-      console.log(token)
-      side = "SELL"
-    }
-  })
+const makeOrder = async (side, params, currentCandle, actualInterval) => {
 
   let orderParams = {
     side: side,
