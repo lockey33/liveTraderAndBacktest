@@ -13,12 +13,12 @@ const launch = async () => {
   actualCoins = actualCoins.data
   rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset1: "ILV", asset2: "USDT"})
   //let rankedTokens = tokenList
-  const blackList = ["PERPUSDT", "KLAYUSDT"]
-  rankedTokens = dataManager.manageBlackList(blackList, rankedTokens)
+  //const blackList = ["PERPUSDT", "KLAYUSDT"]
+  //rankedTokens = dataManager.manageBlackList(blackList, rankedTokens)`
   //console.dir(rankedTokens, {'maxArrayLength': null})
   const customCoins = [{"asset1": "BTC", "interval": "4h_1h"}, {"asset1": "ETH", "interval": "4h_1h"}]
-  rankedTokens = rankedTokens.slice(1,100)
-
+  rankedTokens = rankedTokens.slice(0,100)
+  //console.table(rankedTokens)
 
 
   const params = {
