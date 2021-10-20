@@ -18,6 +18,7 @@ const launch = async () => {
   //console.dir(rankedTokens, {'maxArrayLength': null})
   const customCoins = [
     {"asset1": "BTC", "interval": "4h_1h", "skipTest": true},
+    {"asset1": "STX", "interval": "8h_2h", "skipTest": true},
     {"asset1": "ETH", "interval": "4h_1h", "skipTest": true},
     {"asset1": "FTM", "interval": "30m_15m", "skipTest": true},
     ]
