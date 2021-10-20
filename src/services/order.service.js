@@ -67,8 +67,8 @@ const newOrder = async (orderParams, globalParams) => {
 
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
       console.log("before Buy")
-      await client.newOrder(pair, orderParams.side, orderParams.type, options);
-
+      const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
+      console.log(orderRes)
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
 
@@ -86,7 +86,18 @@ const newOrder = async (orderParams, globalParams) => {
 
 };
 
+
+const getAllOrders = async(pair) => {
+  let orders = await client.allOrders(pair)
+  orders = orders.data
+  console.log(orders)
+  return orders
+}
+
+
+
 module.exports = {
+  getAllOrders,
   getOrderValue,
   newOrder,
 };

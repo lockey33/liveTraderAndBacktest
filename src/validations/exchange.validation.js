@@ -54,6 +54,12 @@ const tradeBestTokens = {
   }),
 };
 
+const getAllOrders = {
+  body: Joi.object().keys({
+    pair: Joi.string().required(),
+  }),
+}
+
 const liveTrading = {
   body: Joi.object().keys({
     interval: Joi.string().required(),
@@ -100,6 +106,7 @@ const newOrder = {
 
 module.exports = {
   getAsset,
+  getAllOrders,
   getHistoricalData,
   backTest,
   tradeBestTokens,

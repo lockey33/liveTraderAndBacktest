@@ -229,6 +229,8 @@ const sendSignal = async (params, text) => {
 
 const makeOrder = async (side, params, currentCandle, actualInterval) => {
 
+  console.log("makeOrder")
+
   let tokenAlreadyBought = false;
 
   sleep.sleep(10)

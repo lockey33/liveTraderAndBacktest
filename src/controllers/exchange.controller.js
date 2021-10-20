@@ -111,6 +111,16 @@ const tradeBestTokens = catchAsync(async(req, res) => {
   res.send("Smart trading launched")
 })
 
+const getAllOrders = catchAsync(async (req, res) => {
+  try{
+    const orders = await order.getAllOrders(req.body.pair);
+    res.send({ orders });
+  }catch(err){
+    console.log(err);
+    res.send({data: err});
+  }
+});
+
 
 const getAllPrice = catchAsync(async (req, res) => {
   try{
@@ -168,6 +178,7 @@ const getExchangeInfos = catchAsync(async (req, res) => {
 
 module.exports = {
   getAccount,
+  getAllOrders,
   getAsset,
   getHistoricalData,
   backTest,

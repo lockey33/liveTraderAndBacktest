@@ -5,7 +5,8 @@ const exchangeValidation = require('../../validations/exchange.validation');
 const exchangeController = require('../../controllers/exchange.controller');
 
 const router = express.Router();
-router.route('/getActualCoins').get(auth('getActualCoins'), exchangeController.getActualCoins);
+router.route('/getActualCoins').get(auth('getActualCoins'), validate(exchangeValidation.getHistoricalData), exchangeController.getActualCoins);
+router.route('/getAllOrders').get(auth('getAllOrders'), exchangeController.getAllOrders);
 router.route('/exchangeinfos').get(auth('exchangeinfos'), exchangeController.getExchangeInfos);
 router.route('/rankedtokens').get(auth('rankedtokens'), exchangeController.getRankedTokens);
 router.route('/account').get(auth('account'), exchangeController.getAccount);
