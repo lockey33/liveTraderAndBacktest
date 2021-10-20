@@ -16,7 +16,11 @@ const launch = async () => {
   const blackList = ["PERPUSDT", "KLAYUSDT"]
   rankedTokens = dataManager.manageBlackList(blackList, rankedTokens)
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  const customCoins = [{"asset1": "BTC", "interval": "4h_1h"}, {"asset1": "ETH", "interval": "4h_1h"}]
+  const customCoins = [
+    {"asset1": "BTC", "interval": "4h_1h", "skipTest": true},
+    {"asset1": "ETH", "interval": "4h_1h", "skipTest": true},
+    {"asset1": "FTM", "interval": "30m_15m", "skipTest": true},
+    ]
   rankedTokens = rankedTokens.slice(0,100)
   //console.table(rankedTokens)
 
