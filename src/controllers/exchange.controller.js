@@ -7,6 +7,8 @@ const backTesting = require('../services/backTesting.service');
 const discover = require('../services/discover.service');
 const calculate = require('../utils/calculate');
 const coinInfos = require('../services/coinInfos.service');
+const sleep = require('sleep');
+
 // const clientTest = new Spot(apiKey, apiSecret, { baseURL: 'https://testnet.binance.vision'});
 const getAccount = catchAsync(async (req, res) => {
   const account = await wallet.getAccount();

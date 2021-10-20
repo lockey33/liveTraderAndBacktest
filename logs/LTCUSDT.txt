@@ -23,3 +23,4 @@
 18-10 15:54 SELL 0.097 LTC
 18-10 17:5 Not enough tokens to make order
 18-10 17:5 minNotional
+20-10 11:40 BUY 0.060 LTC

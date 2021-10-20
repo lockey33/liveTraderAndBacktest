@@ -48,7 +48,7 @@ const getOrderValue = async (side, pairBalance, price, pair) => {
     results.err = "minNotional"
   }
   results.orderValue = orderValue
-
+  console.log("return OrderValue")
   return results;
 };
 
@@ -62,9 +62,11 @@ const newOrder = async (orderParams, globalParams) => {
     const pairBalance = await wallet.getPairBalance({asset1: globalParams.asset1, asset2: globalParams.asset2});
     const price = await getPrice(pair);
     const orderObject = await getOrderValue(orderParams.side, pairBalance, price, pair);
+    console.log("after orderObject")
     if (!orderObject.err) {
 
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
+      console.log("before Buy")
       await client.newOrder(pair, orderParams.side, orderParams.type, options);
 
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);

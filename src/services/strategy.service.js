@@ -3,7 +3,7 @@ const wallet = require('./wallet.service');
 const indicators = require('./indicators.service');
 const telegram = require('./telegram.service');
 const dataManager = require('../utils/dataManager');
-
+const sleep = require('sleep');
 
 const superTrendEMAStrategy = async (candles, params) => {
   candles = await indicators.superTrend(candles, 10, 3);
@@ -229,12 +229,32 @@ const sendSignal = async (params, text) => {
 
 const makeOrder = async (side, params, currentCandle, actualInterval) => {
 
+  let tokenAlreadyBought = false;
+
+  sleep.sleep(10)
+
+  let allTokensInPosition = await wallet.getActualCoins()
+
+  sleep.sleep(10)
+
+  allTokensInPosition.map((token) => {
+    if(token.asset1 === params.asset1){
+      tokenAlreadyBought = true;
+    }
+  })
+
   let orderParams = {
     side: side,
     type: 'MARKET'
   }
 
-  params = await order.newOrder(orderParams, params, actualInterval);
+
+
+  if(side === "BUY" && !tokenAlreadyBought){
+    await order.newOrder(orderParams, params, actualInterval);
+  }else if(side === "SELL"){
+    await order.newOrder(orderParams, params, actualInterval);
+  }
 
   return params
 }

@@ -15,6 +15,7 @@ const backTesting = require('../services/backTesting.service');
 const calculate = require('../utils/calculate');
 const logsManager = require('../utils/logsManager');
 const coinInfos = require('../services/coinInfos.service');
+const sleep = require('sleep');
 const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
 const getHistoricalData = async (params) => {

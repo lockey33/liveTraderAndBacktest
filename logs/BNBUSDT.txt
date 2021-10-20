@@ -49,3 +49,5 @@
 02-10 20:56 BUY 0.046 BNB
 08-10 11:17 BUY 0.054 BNB
 09-10 21:4 BUY 0.088 BNB
+20-10 11:32 Not enough tokens to make order
+20-10 11:32 minNotional

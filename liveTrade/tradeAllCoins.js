@@ -12,8 +12,6 @@ const launch = async () => {
   //rankedTokens = rankedTokens.slice(0,100)
   let rankedTokens =
     [
-      {pair: 'BTCUSDT', asset1: 'BTC', asset2: 'USDT'},
-      {pair: 'ETHUSDT', asset1: 'ETH', asset2: 'USDT'},
       {pair: 'BNBUSDT', asset1: 'BNB', asset2: 'USDT'},
       {pair: 'ADAUSDT', asset1: 'ADA', asset2: 'USDT'},
       {pair: 'XRPUSDT', asset1: 'XRP', asset2: 'USDT'},
