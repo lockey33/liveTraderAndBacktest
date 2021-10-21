@@ -85,6 +85,15 @@ const tradeBestTokens = catchAsync(async(req, res) => {
       coinList.push(actualCoin)
     }
   })
+
+  customCoins.map((customCoin) => {
+    coinList.map((coin, index) => {
+      if(customCoin.asset1 === coin.asset1){
+        coinList[index] = Object.assign({}, coin, customCoin)
+      }
+    })
+  })
+
   let bestTokens = await exchange.getBestTokens(coinList, params)
 
   for(const token of bestTokens) {

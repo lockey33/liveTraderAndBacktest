@@ -308,7 +308,7 @@ const superTrendFind = async (candles, params) => {
 };
 
 
-const multiIntervalFind = async (candles, params) => {
+const multiIntervalFind = async (candles, params, actualInterval) => {
 
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
@@ -317,13 +317,13 @@ const multiIntervalFind = async (candles, params) => {
   let intervals = Object.keys(candles)
   const upperIntervalCandles = candles[intervals[0]]
 
-  if (params.i === 1 && params.signals === "0") {
+/*  if (params.i === 1 && params.signals === "0") {
     const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
     const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.lowestInterval][candles[params.lowestInterval].length - 1].close)
     params.inPosition = checkPosition.inPosition
-  }
+  }*/
 
-  if (params.lowestInterval === intervals[1]) {
+  if (params.lowestInterval === actualInterval) {
 
     let candlesForInterval = candles[params.lowestInterval]
 
