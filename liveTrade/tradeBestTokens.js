@@ -6,12 +6,13 @@ const tokenList = require('../static/tokenList.json');
 const dataManager = require('../src/utils/dataManager');
 
 const launch = async () => {
+  const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
   let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   rankedTokens = rankedTokens.data.result
 
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
-  rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset1: "ILV", asset2: "USDT"})
+  rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset2: "USDT"})
   //let rankedTokens = tokenList
   const blackList = ["PERPUSDT", "KLAYUSDT"]
   rankedTokens = dataManager.manageBlackList(blackList, rankedTokens)
