@@ -22,7 +22,6 @@ const getPairInfos = async (pair) => {
 const getRequirements = async (pair) => {
   const pairInfos = await getPairInfos(pair);
   let requirements = null;
-  console.log(pairInfos.filters, pair)
   pairInfos.filters.map((filter) => {
     if (filter.filterType === 'LOT_SIZE') {
       requirements = filter;

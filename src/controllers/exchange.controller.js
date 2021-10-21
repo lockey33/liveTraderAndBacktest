@@ -72,7 +72,7 @@ const tradeBestTokens = catchAsync(async(req, res) => {
   const params = req.body.params
   const customCoins = req.body.customCoins
   const actualCoins = req.body.actualCoins
-
+  console.table(coinList)
   actualCoins.map((actualCoin) => {
     let foundCoin = false;
     coinList.map((coin) => {

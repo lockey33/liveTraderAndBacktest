@@ -1,7 +1,4 @@
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const appDir = path.resolve('./');
 const tokenList = require('../static/tokenList.json');
 const dataManager = require('../src/utils/dataManager');
 
@@ -11,13 +8,14 @@ const launch = async () => {
   rankedTokens = rankedTokens.data.result
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
+
   if(rankedTokens.length === 0){
     rankedTokens = tokenList
   }
   rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset2: "USDT"})
 
   const blackList = ["PERPUSDT", "KLAYUSDT"]
-  rankedTokens = dataManager.manageBlackList(blackList, rankedTokens)
+  rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
   //console.dir(rankedTokens, {'maxArrayLength': null})
   const customCoins = [
     {"asset1": "BTC", asset2: "USDT", "interval": "4h_1h", "skipTest": true},
@@ -26,8 +24,6 @@ const launch = async () => {
     {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true},
     ]
   rankedTokens = rankedTokens.slice(0,100)
-  //console.table(rankedTokens)
-
 
   const params = {
     interval: '8h_4h',
