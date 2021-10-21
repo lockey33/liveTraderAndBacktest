@@ -234,7 +234,7 @@ const getAllBackTestResults = async (coinList, params) => {
     uniqueParams.asset1 = coin.asset1
     uniqueParams.asset2 = coin.asset2
     if(coin.skipTest === true){
-      backTestResults.push({asset1: coin.asset1, asset2: coin.asset2, pair: coin.asset1 + coin.asset2, profit: 100, amount: 100,best: 1, winRate: 100, minimumWinRate: 0, totalLose: 0, totalProfit: 0, avgLose: 0, avgProfit: 0})
+      backTestResults.push({asset1: coin.asset1, asset2: coin.asset2, pair: coin.asset1 + coin.asset2, profit: "100", amount: 100,best: "1", winRate: "100", minimumWinRate: "0", totalLose: "0", totalProfit: "0", avgLose: "0", avgProfit: "0"})
     }else{
       let filteredResult = await backTest(uniqueParams)
       finalCapital += filteredResult.amount

@@ -85,15 +85,23 @@ const tradeBestTokens = catchAsync(async(req, res) => {
       coinList.push(actualCoin)
     }
   })
-
+  console.table(customCoins)
   customCoins.map((customCoin) => {
+    let customCoinAlreadyExist = false;
     coinList.map((coin, index) => {
       if(customCoin.asset1 === coin.asset1){
+        console.log(coin.asset1)
         coinList[index] = Object.assign({}, coin, customCoin)
+        customCoinAlreadyExist = true;
       }
     })
+    if(customCoinAlreadyExist === false){
+      console.log('here', customCoin.asset1)
+      customCoin.pair = customCoin.asset1+customCoin.asset2
+      coinList.push(customCoin);
+    }
   })
-
+  console.table(coinList)
   let bestTokens = await exchange.getBestTokens(coinList, params)
 
   for(const token of bestTokens) {
