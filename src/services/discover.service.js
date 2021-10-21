@@ -28,9 +28,7 @@ const getLatestCoinMarketCap = async() => {
 
 const getTradable = async(coinMarketCapList, binanceList) => {
   const tradableList = [];
-  if(coinMarketCapList.length === 0){
-    coinMarketCapList = tokenList;
-  }
+
   coinMarketCapList.map((coinMarketCapCurrency) => {
     const coinMarketCapPair = coinMarketCapCurrency.symbol + "USDT";
     binanceList.map((binanceCurrency) => {
@@ -45,7 +43,6 @@ const getTradable = async(coinMarketCapList, binanceList) => {
 
 const getRankedTokens = async (data) => {
   const coinMarketCapList = await getLatestCoinMarketCap();
-  console.log(coinMarketCapList)
   const binanceList = exchangeInfos;
   const tradableList = await getTradable(coinMarketCapList, binanceList)
 
