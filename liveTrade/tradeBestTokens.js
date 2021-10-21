@@ -25,7 +25,7 @@ const launch = async () => {
     {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true},
     {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true},
     ]
-  rankedTokens = rankedTokens.slice(0,1)
+  rankedTokens = rankedTokens.slice(0,100)
   //console.table(rankedTokens)
 
 
