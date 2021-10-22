@@ -6,46 +6,48 @@ const dataManager = require('../utils/dataManager');
 const sleep = require('sleep');
 
 const superTrendEMAStrategy = async (candles, params) => {
-  candles = await indicators.superTrend(candles, 10, 3);
-  candles = await indicators.EMA(candles, 200);
-  console.table(candles, ['openTime', 'open', 'closeTime', 'close', 'supertrend', 'ema']);
+  let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
+  let pair = params.asset1 + params.asset2
+  pair = pair.toUpperCase()
+  let intervals = Object.keys(candles)
 
-  const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
-  const currentCandle = candles[candles.length - 1];
-  const previousCandle = candles[candles.length - 2];
-  let pairBalance = null
-  let inPosition = false;
-  const checkPosition = await wallet.checkPosition(params, requirements, params.inPosition, currentCandle.close)
-  console.log(checkPosition)
-  inPosition = checkPosition.inPosition
-  pairBalance = checkPosition.pairBalance
+  for (const interval of intervals) {
+    let candlesForInterval = candles[interval]
 
-  if (
-    (currentCandle.supertrend === 1 &&
-      previousCandle.supertrend !== currentCandle.supertrend &&
-      currentCandle.close > currentCandle.ema && inPosition === false) ||
-    (currentCandle.supertrend === 1 && currentCandle.close > currentCandle.ema && inPosition === false)
-  ) {
-    if (params.signals === '1') {
-      await telegram.sendMessage(params.asset1 + " UPTREND")
-    } else {
-      await order.newOrder({asset1: params.asset1, asset2: params.asset2, side: 'BUY', type: 'MARKET'});
+    const currentCandle = candlesForInterval[candlesForInterval.length - 1]; // pas besoin de boucle ici grâce au socket trading
+    const previousCandle = candlesForInterval[candlesForInterval.length - 2];
+    if (
+      (currentCandle.supertrend === 1 &&
+        previousCandle.supertrend !== currentCandle.supertrend &&
+        currentCandle.close > currentCandle.ema && inPosition === false) ||
+      (currentCandle.supertrend === 1 && currentCandle.close > currentCandle.ema && inPosition === false)
+    ) {
+      console.log("SuperTrend UP",  params.asset1 + params.asset2, "position", params.inPosition)
+      if (params.signals === "1" && params.inPosition === "0") {
+        params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
+      } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
+        console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        params = await makeOrder("BUY", params, currentCandle, actualInterval)
+      }
+      params.oneOrderSignalPassed = "1"
     }
-    console.log(currentCandle.closeTime, 'BUY');
-  }
 
-  if (
-    (currentCandle.supertrend === 0 &&
-      previousCandle.supertrend !== currentCandle.supertrend &&
-      currentCandle.close < currentCandle.ema && inPosition === true) ||
-    (currentCandle.supertrend === 0 && currentCandle.close < currentCandle.ema && inPosition === true)
-  ) {
-    if (params.signals === '1') {
-      await telegram.sendMessage(params.asset1 + " DOWNTREND")
-    } else {
-      await order.newOrder({asset1: params.asset1, asset2: params.asset2, side: 'SELL', type: 'MARKET'});
+    if (
+      (currentCandle.supertrend === 0 &&
+        previousCandle.supertrend !== currentCandle.supertrend &&
+        currentCandle.close < currentCandle.ema && inPosition === true) ||
+      (currentCandle.supertrend === 0 && currentCandle.close < currentCandle.ema && inPosition === true)
+    ) {
+      console.log("SuperTrend Down",  params.asset1 + params.asset2, "position", params.inPosition, currentCandle.supertrend, previousCandle.supertrend)
+      if (params.signals === "1" && params.inPosition === "1") {
+        params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
+      } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
+        console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        params = await makeOrder("SELL", params, currentCandle, actualInterval)
+      }
+      params.oneOrderSignalPassed = "1"
     }
-    console.log(currentCandle.closeTime, 'SELL');
   }
 
   return {balance: pairBalance, candles: candles};
@@ -55,19 +57,10 @@ const superTrendEMAStrategy = async (candles, params) => {
 const superTrendStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
-
   let pair = params.asset1 + params.asset2
   pair = pair.toUpperCase()
-
-  if (params.i === 1 && params.signals === "0") {
-    console.log('params', params)
-    const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
-    const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.targetInterval][candles[params.targetInterval].length - 1].close)
-    console.log('check', checkPosition)
-    params.inPosition = checkPosition.inPosition
-  }
-
   let intervals = Object.keys(candles)
+
   for (const interval of intervals) {
     let candlesForInterval = candles[interval]
 
@@ -77,25 +70,14 @@ const superTrendStrategy = async (candles, params) => {
       (currentCandle.supertrend === 1 &&
         previousCandle.supertrend !== currentCandle.supertrend)
     ) {
-      //console.log('SuperTrend UP | ' + params.asset1 + params.asset2)
-      //console.table(candlesForInterval,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-      if (params.signals === "1" && params.inPosition === "0") {
-        await telegram.sendMessage('SuperTrend UP | ', params.asset1 + params.asset2)
-        params.inPosition = "1";
-      } else if (params.signals === "0" && params.inPosition === "0") {
-        await order.newOrder({
-          asset1: params.asset1,
-          asset2: params.asset2,
-          side: 'BUY',
-          type: 'MARKET',
-          inPosition: params.inPosition
-        });
-
-        await telegram.sendMessage('BUY ', params.asset1 + params.asset2)
-        const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
-        const checkPosition = await wallet.checkPosition(params, requirements, params.inPosition, currentCandle.close)
-        params.pairBalance = checkPosition.pairBalance
-        params.inPosition = "1";
+        console.log("SuperTrend UP",  params.asset1 + params.asset2, "position", params.inPosition)
+        if (params.signals === "1" && params.inPosition === "0") {
+          params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
+        } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
+          console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+          params = await makeOrder("BUY", params, currentCandle, actualInterval)
+        }
+        params.oneOrderSignalPassed = "1"
       }
 
 
@@ -105,30 +87,16 @@ const superTrendStrategy = async (candles, params) => {
       (currentCandle.supertrend === 0 &&
         previousCandle.supertrend !== currentCandle.supertrend && params.inPosition === "0")
     ) {
-      //('SuperTrend DOWN | ' + params.asset1 + params.asset2)
-      console.log("liveCandle:", params.liveCandle, "superTrendConfirmed", pair, "position", params.inPosition, "previousTrend", previousCandle.supertrend, "currentTrend", currentCandle.supertrend)
+      console.log("SuperTrend Down",  params.asset1 + params.asset2, "position", params.inPosition, currentCandle.supertrend, previousCandle.supertrend)
       if (params.signals === "1" && params.inPosition === "1") {
-        await telegram.sendMessage('SuperTrend DOWN | ', params.asset1 + params.asset2)
-
-      } else if (params.signals === "0" && params.inPosition === "1") {
-        await order.newOrder({
-          asset1: params.asset1,
-          asset2: params.asset2,
-          side: 'SELL',
-          type: 'MARKET',
-          inPosition: params.inPosition
-        });
-        await telegram.sendMessage('SELL ', params.asset1 + params.asset2)
-        const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
-        const checkPosition = await wallet.checkPosition(params, requirements, params.inPosition, currentCandle.close)
-        params.pairBalance = checkPosition.pairBalance
+        params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
+      } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
+        console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        params = await makeOrder("SELL", params, currentCandle, actualInterval)
       }
-      params.inPosition = "0";
-
+      params.oneOrderSignalPassed = "1"
     }
 
-  }
-  params.i = params.i + 1;
 
   return {candles, params}
 };
