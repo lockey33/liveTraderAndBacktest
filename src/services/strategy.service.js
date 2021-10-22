@@ -5,7 +5,7 @@ const telegram = require('./telegram.service');
 const dataManager = require('../utils/dataManager');
 const sleep = require('sleep');
 
-const superTrendEMAStrategy = async (candles, params) => {
+const superTrendEMAStrategy = async (candles, params, actualInterval) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
   let pair = params.asset1 + params.asset2
@@ -28,7 +28,7 @@ const superTrendEMAStrategy = async (candles, params) => {
         params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
         console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("BUY", params, currentCandle, interval)
+        params = await makeOrder("BUY", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
     }
@@ -44,7 +44,7 @@ const superTrendEMAStrategy = async (candles, params) => {
         params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
         console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("SELL", params, currentCandle, interval)
+        params = await makeOrder("SELL", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
     }
@@ -54,7 +54,7 @@ const superTrendEMAStrategy = async (candles, params) => {
 };
 
 
-const superTrendStrategy = async (candles, params) => {
+const superTrendStrategy = async (candles, params, actualInterval) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
   let pair = params.asset1 + params.asset2
@@ -75,7 +75,7 @@ const superTrendStrategy = async (candles, params) => {
         params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
         console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("BUY", params, currentCandle, interval)
+        params = await makeOrder("BUY", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
     }
@@ -89,7 +89,7 @@ const superTrendStrategy = async (candles, params) => {
         params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
         console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("SELL", params, currentCandle, interval)
+        params = await makeOrder("SELL", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
     }
