@@ -156,11 +156,18 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
     const currentCandle = candlesForInterval[candlesForInterval.length - 1]; // pas besoin de boucle ici grâce au socket trading
     const previousCandle = candlesForInterval[candlesForInterval.length - 2];
     const currentUpperIntervalCandle = upperIntervalCandles[upperIntervalCandles.length - 1]
+    const previousUpperIntervalCandle = upperIntervalCandles[upperIntervalCandles.length - 2]
     //console.log(pair, "position", params.inPosition, "previousTrend", previousCandle.supertrend, "currentTrend", currentCandle.supertrend, "currentUpperTrend", currentUpperIntervalCandle.supertrend)
 
     if (
-        (currentCandle.supertrend === 1 &&
-          previousCandle.supertrend !== currentCandle.supertrend && currentUpperIntervalCandle.supertrend === 1)
+        ((currentCandle.supertrend === 1 &&
+          previousCandle.supertrend !== currentCandle.supertrend &&
+          currentUpperIntervalCandle.supertrend === 1)
+          ||
+          (currentCandle.supertrend === 1 &&
+            currentUpperIntervalCandle.supertrend === 1 &&
+            previousUpperIntervalCandle.supertrend !== currentUpperIntervalCandle.supertrend)
+        )
       ) {
           console.log("SuperTrend UP",  params.asset1 + params.asset2, "position", params.inPosition)
           if (params.signals === "1" && params.inPosition === "0") {
@@ -191,7 +198,7 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
 
 };
 
-
+// permet de ne pas avoir a attendre les clotures de bougie mais je met cette fonction en suspend pour l'instant, le params.inPosition n'est pas sécurisant pour certains cas
 const managePosition = async (params, candles, actualInterval) => {
   const currentCandle = candles[actualInterval][candles[actualInterval].length - 1]
 
