@@ -37,14 +37,14 @@ const getLimitedCandles = async (params, pair, interval) => {
 }
 
 const candlesManager = async(params, pair, interval) => {
-  let candles = [];
+  let candlesForInterval = [];
 
   if(params.candleFusion === '1'){
-    candles[interval] = await getCandlesUntilDate(params, pair, interval)
+    candlesForInterval = await getCandlesUntilDate(params, pair, interval)
   }else{
-    candles[interval] = await getLimitedCandles(params,pair, interval)
+    candlesForInterval = await getLimitedCandles(params,pair, interval)
   }
-  return candles
+  return candlesForInterval
 }
 
 const getHistoricalData = async (params) => {
@@ -58,7 +58,7 @@ const getHistoricalData = async (params) => {
     let intervals = params.interval.split("_")
 
     for(const interval of intervals){
-      candles = await candlesManager(params, pair, interval)
+      candles[interval] = await candlesManager(params, pair, interval)
     }
 
   }else { // mono interval
@@ -148,7 +148,7 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
     candles.push(formatedCandle)
     dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
     candles = dataWithIndicators.candles[targetInterval]
-    console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+    //console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
     params = dataWithIndicators.params
     const fileName = `${params.asset1}${params.asset2}`;
     //logsManager.writeLogs(fileName, JSON.stringify(candles));
