@@ -26,14 +26,14 @@ const launch = async () => {
   rankedTokens = rankedTokens.slice(0,100)
 
   const params = {
-    interval: '8h_4h',
+    interval: '1d',
     limit: '1000',
-    realTrading: "1",
-    signals: '0',
+    realTrading: "0",
+    signals: '1',
     formatIndex: '1',
-    strategy: 'multiIntervalStrategy',
-    //strategy: 'superTrendStrategy',
-    startTime: "01-05-2021 00:00",
+    //strategy: 'multiIntervalStrategy',
+    strategy: 'superTrendStrategy',
+    startTime: "01-09-2021 00:00",
     endTime: "18-10-2021 10:00",
     candleFusion: "1",
     buyAtStart: "0",

@@ -51,14 +51,14 @@ const launch = async () => {
 
   for (const token of rankedTokens) {
     const params = {
-      interval: '5m_1m',
+      interval: '1m',
       limit: '1000',
-      realTrading: "1",
-      signals: '0',
+      realTrading: "0",
+      signals: '1',
       formatIndex: '1',
       asset1: token.asset1,
       asset2: token.asset2,
-      strategy: 'multiIntervalStrategy',
+      strategy: 'superTrendStrategy',
       spacing: "20",
       oneOrderSignalPassed : "1",
       waitForClose: "1"

@@ -20,15 +20,15 @@ const superTrendEMAStrategy = async (candles, params) => {
     if (
       (currentCandle.supertrend === 1 &&
         previousCandle.supertrend !== currentCandle.supertrend &&
-        currentCandle.close > currentCandle.ema && inPosition === false) ||
-      (currentCandle.supertrend === 1 && currentCandle.close > currentCandle.ema && inPosition === false)
+        currentCandle.close > currentCandle.ema) ||
+      (currentCandle.supertrend === 1 && currentCandle.close > currentCandle.ema)
     ) {
       console.log("SuperTrend UP",  params.asset1 + params.asset2, "position", params.inPosition)
       if (params.signals === "1" && params.inPosition === "0") {
         params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
         console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("BUY", params, currentCandle, actualInterval)
+        params = await makeOrder("BUY", params, currentCandle, interval)
       }
       params.oneOrderSignalPassed = "1"
     }
@@ -36,21 +36,21 @@ const superTrendEMAStrategy = async (candles, params) => {
     if (
       (currentCandle.supertrend === 0 &&
         previousCandle.supertrend !== currentCandle.supertrend &&
-        currentCandle.close < currentCandle.ema && inPosition === true) ||
-      (currentCandle.supertrend === 0 && currentCandle.close < currentCandle.ema && inPosition === true)
+        currentCandle.close < currentCandle.ema) ||
+      (currentCandle.supertrend === 0 && currentCandle.close < currentCandle.ema)
     ) {
       console.log("SuperTrend Down",  params.asset1 + params.asset2, "position", params.inPosition, currentCandle.supertrend, previousCandle.supertrend)
       if (params.signals === "1" && params.inPosition === "1") {
         params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
         console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("SELL", params, currentCandle, actualInterval)
+        params = await makeOrder("SELL", params, currentCandle, interval)
       }
       params.oneOrderSignalPassed = "1"
     }
   }
 
-  return {balance: pairBalance, candles: candles};
+  return {candles, params}
 };
 
 
@@ -70,33 +70,30 @@ const superTrendStrategy = async (candles, params) => {
       (currentCandle.supertrend === 1 &&
         previousCandle.supertrend !== currentCandle.supertrend)
     ) {
-        console.log("SuperTrend UP",  params.asset1 + params.asset2, "position", params.inPosition)
-        if (params.signals === "1" && params.inPosition === "0") {
-          params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
-        } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-          console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-          params = await makeOrder("BUY", params, currentCandle, actualInterval)
-        }
-        params.oneOrderSignalPassed = "1"
+      console.log("SuperTrend UP", params.asset1 + params.asset2, "position", params.inPosition)
+      if (params.signals === "1" && params.inPosition === "0") {
+        params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
+      } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
+        console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        params = await makeOrder("BUY", params, currentCandle, interval)
       }
-
-
+      params.oneOrderSignalPassed = "1"
     }
 
     if (
       (currentCandle.supertrend === 0 &&
         previousCandle.supertrend !== currentCandle.supertrend && params.inPosition === "0")
     ) {
-      console.log("SuperTrend Down",  params.asset1 + params.asset2, "position", params.inPosition, currentCandle.supertrend, previousCandle.supertrend)
+      console.log("SuperTrend Down", params.asset1 + params.asset2, "position", params.inPosition, currentCandle.supertrend, previousCandle.supertrend)
       if (params.signals === "1" && params.inPosition === "1") {
         params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-        console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
-        params = await makeOrder("SELL", params, currentCandle, actualInterval)
+        console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        params = await makeOrder("SELL", params, currentCandle, interval)
       }
       params.oneOrderSignalPassed = "1"
     }
-
+  }
 
   return {candles, params}
 };
