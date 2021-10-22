@@ -116,7 +116,6 @@ const tradeBestTokens = catchAsync(async(req, res) => {
     delete uniqueParams.endTime
     delete uniqueParams.candleFusion
     uniqueParams.oneOrderSignalPassed = "1"
-    uniqueParams.waitForClose = "1"
 
     let candles = await exchange.getHistoricalData(uniqueParams);
     let intervals = Object.keys(candles);
@@ -168,6 +167,7 @@ const socketTrading = catchAsync(async (req, res) => {
       const socketData = await exchange.getSocketData(req.body, candles)
       res.send({ data: socketData });
     }else{
+      console.log("Not enough candles for now")
       res.send({ data: "Not enough candles for now" });
     }
   }catch(err){

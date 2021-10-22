@@ -17,9 +17,7 @@ const launch = async () => {
       asset2: token.asset2,
       signals: '0',
       strategy: 'multiIntervalStrategy',
-      spacing: "20",
       oneOrderSignalPassed : "1",
-      waitForClose: "1"
     }
     const liveSignal = await axios.post('http://localhost:3000/v1/exchange/pair/sockettrading', params)
   }

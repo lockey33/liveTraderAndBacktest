@@ -15,7 +15,6 @@ const launch = async () => {
       asset1: token.asset1,
       asset2: token.asset2,
       signals: '1',
-      spacing: '1',
       oneOrderSignalPassed: '1',
       strategy: 'superTrendStrategy'
     }

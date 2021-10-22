@@ -88,9 +88,7 @@ const socketTrading = {
     signals: Joi.string().required(),
     strategy: Joi.string().required(),
     realTrading: Joi.string().required(),
-    spacing: Joi.string().required(),
     oneOrderSignalPassed: Joi.string().required(),
-    waitForClose: Joi.string().required()
   }),
 };
 

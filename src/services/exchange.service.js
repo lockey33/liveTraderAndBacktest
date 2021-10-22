@@ -18,6 +18,35 @@ const coinInfos = require('../services/coinInfos.service');
 const sleep = require('sleep');
 const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
+
+const getLimitedCandles = async (params, pair, interval) => {
+  let candles = []
+  candles[interval] = await requestManager.safeRequest("klines", [pair, interval, {startTime: params.startTime, limit: params.limit} ]);
+  candles[interval] = candles[interval].data
+  candles[interval] = await dataFormater.formatAllCandles(candles[interval]);
+  if(!params.realTrading) {
+    const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
+    const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[interval][candles[interval].length - 1].close)
+    params.inPosition = checkPosition.inPosition
+    params.pairBalance = checkPosition.pairBalance
+  }
+
+  candles[interval].pop()
+
+  return candles[interval]
+}
+
+const candlesManager = async(params, pair, interval) => {
+  let candles = [];
+
+  if(params.candleFusion === '1'){
+    candles[interval] = await getCandlesUntilDate(params, pair, interval)
+  }else{
+    candles[interval] = await getLimitedCandles(params,pair, interval)
+  }
+  return candles
+}
+
 const getHistoricalData = async (params) => {
   const pair = await dataFormater.getPair(params);
   let candles = []
@@ -25,49 +54,16 @@ const getHistoricalData = async (params) => {
   params.endTime = (params.endTime ? await dataFormater.formatDate(params.endTime) : null)
   params.inPosition = "0";
 
-  if(params.interval.includes("_")){
+  if(params.interval.includes("_")){ // si on est en multi interval
     let intervals = params.interval.split("_")
 
     for(const interval of intervals){
-      if(params.candleFusion === '1'){
-          candles[interval] = await getCandlesUntilDate(params, pair, interval)
-      }else{
-        candles[interval] = await requestManager.safeRequest("klines", [pair, interval, {startTime: params.startTime, limit: params.limit} ]);
-        candles[interval] = candles[interval].data
-        candles[interval] = await dataFormater.formatAllCandles(candles[interval]);
-        if(!params.realTrading) {
-          const requirements = await coinInfos.getRequirements(params.asset1+params.asset2)
-          const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[interval][candles[interval].length - 1].close)
-          params.inPosition = checkPosition.inPosition
-          params.pairBalance = checkPosition.pairBalance
-        }
-      }
-      if(params.waitForClose === "1"){
-        candles[interval].pop()
-        //console.table(candles[interval]);
-      }
+      candles = await candlesManager(params, pair, interval)
     }
-  }else{
-    if(params.candleFusion === '1'){
-      candles[params.interval] = await getCandlesUntilDate(params, pair, params.interval)
-    }else{
-      candles[params.interval] = await requestManager.safeRequest("klines", [pair, params.interval, {startTime: params.startTime, limit: params.limit} ]);
-      candles[params.interval] = candles[params.interval].data;
-      candles[params.interval] = await dataFormater.formatAllCandles(candles[params.interval]);
-      if(!params.realTrading){
-        const requirements = await coinInfos.getRequirements(params.asset1+params.asset2)
-        const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[params.interval][candles[params.interval].length - 1].close)
-        params.inPosition = checkPosition.inPosition
-        params.pairBalance = checkPosition.pairBalance
-      }
 
-    }
-    if(params.waitForClose === "1"){
-      candles[params.interval].pop()
-    }
+  }else { // mono interval
+    candles = await candlesManager(params, pair, params.interval)
   }
-
-
   return candles;
 
 };
@@ -127,7 +123,7 @@ const listenToSocket = async (pair, params, dataWithIndicators, targetInterval) 
   params.i = 0;
   params.pair = pair.toUpperCase()
   dataWithIndicators[targetInterval][dataWithIndicators[targetInterval].length - 1].liveCandle = "1"
-  console.log("Listening to :", pair.toUpperCase(), targetInterval, "real :", params.realTrading, "signals :", params.signals, "waitForClose", params.waitForClose, "oneOrderSignalPassed", params.oneOrderSignalPassed)
+  console.log("Listening to :", pair.toUpperCase(), targetInterval, "real :", params.realTrading, "signals :", params.signals, "oneOrderSignalPassed", params.oneOrderSignalPassed)
   socket.onmessage = async(event) => {
     let data = JSON.parse(event.data);
     const results = await manageLastCandle(dataWithIndicators, params, data, targetInterval)
@@ -144,39 +140,19 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
     params.i = params.i + 1
   }
   //console.log(params.i, targetInterval)
-  if(params.waitForClose === "1"){
-    const formatedCandle = await dataFormater.formatSocketCandle(actualCandle);
-    if(actualCandle.k.x === true){
-      console.log("candle closed", formatedCandle.openTime, formatedCandle.closeTime, params.pair)
+  const formatedCandle = await dataFormater.formatSocketCandle(actualCandle);
 
-      candles.push(formatedCandle)
-      dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
-      candles = dataWithIndicators.candles[targetInterval]
-      //console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-      params = dataWithIndicators.params
-      const fileName = `${params.asset1}${params.asset2}`;
-      //logsManager.writeLogs(fileName, JSON.stringify(candles));
-    }
-  }else{
-    if(params.i % parseInt(params.spacing) === 0){
+  if(actualCandle.k.x === true){
+    console.log("candle closed", formatedCandle.openTime, formatedCandle.closeTime, params.pair)
 
-      const formatedCandle = await dataFormater.formatSocketCandle(actualCandle);
-
-      if(formatedCandle.openTime !== candles[candles.length - 1].openTime){ //si la dernière candle a une date différente de la nouvelle, on push
-        console.log("candle closed", formatedCandle.openTime, formatedCandle.closeTime, params.pair)
-        candles.push(formatedCandle)
-
-      }else{ // si l'heure est identique
-        candles[candles.length - 1] = formatedCandle
-        dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
-        candles = dataWithIndicators.candles[targetInterval]
-        params = dataWithIndicators.params
-
-      }
-    }
+    candles.push(formatedCandle)
+    dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
+    candles = dataWithIndicators.candles[targetInterval]
+    console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+    params = dataWithIndicators.params
+    const fileName = `${params.asset1}${params.asset2}`;
+    //logsManager.writeLogs(fileName, JSON.stringify(candles));
   }
-
-
 
   return { candles, params }
 

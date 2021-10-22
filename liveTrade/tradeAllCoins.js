@@ -59,9 +59,7 @@ const launch = async () => {
       asset1: token.asset1,
       asset2: token.asset2,
       strategy: 'superTrendStrategy',
-      spacing: "20",
       oneOrderSignalPassed : "1",
-      waitForClose: "1"
     }
 
 /*    if(token.asset1 === "BTC" || token.asset1 === "ETH"){
