@@ -7,6 +7,7 @@ const launch = async () => {
   let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   rankedTokens = rankedTokens.data.result
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
+  console.log(actualCoins)
   actualCoins = actualCoins.data
 
   if(rankedTokens.length === 0){
@@ -23,7 +24,7 @@ const launch = async () => {
     {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true},
     {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true},
     ]
-  rankedTokens = rankedTokens.slice(0,20)
+  rankedTokens = rankedTokens.slice(0,50)
 
   const params = {
     interval: '1d',

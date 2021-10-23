@@ -3,7 +3,8 @@ const requestManager = require('../utils/requestManager');
 
 const getAccount = async () => {
   const options = {recvWindow: 60000}
-  const account = await requestManager.safeRequest("fetchBalance");
+  const account = await requestManager.safeRequest("binance","fetchBalance", []);
+
   return account.info;
 };
 

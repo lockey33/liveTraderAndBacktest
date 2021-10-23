@@ -19,7 +19,8 @@ const getMillisToSleep =  (retryHeaderString) => {
 
 const safeRequest = async (exchanges, functionName, params) => {
   try{
-    const response = await client[exchanges][functionName](...params);
+    const clientForExchange = await client.getClient("binance")
+    const response = await clientForExchange[functionName](...params);
     return response
   }catch(err){
     console.log(err)

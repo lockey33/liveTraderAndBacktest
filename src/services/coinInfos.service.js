@@ -4,7 +4,7 @@ const config = require('../config/config');
 const requestManager = require('../utils/requestManager');
 
 const getAllPrice = async () => {
-  const prices = await requestManager.safeRequest('fetchTickers')
+  const prices = await requestManager.safeRequest("binance",'fetchTickers', [])
   return Object.values(prices);
 };
 
