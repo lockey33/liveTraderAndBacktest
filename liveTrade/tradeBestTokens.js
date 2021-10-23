@@ -23,17 +23,17 @@ const launch = async () => {
     {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true},
     {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true},
     ]
-  rankedTokens = rankedTokens.slice(0,100)
+  rankedTokens = rankedTokens.slice(0,20)
 
   const params = {
-    interval: '8h_4h',
+    interval: '1d',
     limit: '1000',
     realTrading: "0",
     signals: '1',
     formatIndex: '1',
-    strategy: 'multiIntervalStrategy',
-    //strategy: 'superTrendStrategy',
-    startTime: "01-09-2021 00:00",
+    //strategy: 'multiIntervalStrategy',
+    strategy: 'superTrendStrategy',
+    startTime: "01-01-2021 00:00",
     endTime: "22-10-2021 02:00",
     candleFusion: "1",
     buyAtStart: "0",

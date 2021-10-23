@@ -61,7 +61,7 @@ const getHistoricalData = async (params) => {
     }
 
   }else { // mono interval
-    candles = await candlesManager(params, pair, params.interval)
+    candles[params.interval] = await candlesManager(params, pair, params.interval)
   }
   return candles;
 
