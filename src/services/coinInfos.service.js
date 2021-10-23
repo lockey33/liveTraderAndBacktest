@@ -1,12 +1,11 @@
 const exchangeInfos = require('../../static/exchange.json');
 const {Spot} = require('@binance/connector');
 const config = require('../config/config');
-const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
-
+const requestManager = require('../utils/requestManager');
 
 const getAllPrice = async () => {
-  const prices = await client.tickerPrice();
-  return prices.data;
+  const prices = await requestManager.safeRequest('fetchTickers')
+  return Object.values(prices);
 };
 
 const getPairInfos = async (pair) => {

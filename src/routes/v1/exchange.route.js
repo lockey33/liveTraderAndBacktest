@@ -3,6 +3,7 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const exchangeValidation = require('../../validations/exchange.validation');
 const exchangeController = require('../../controllers/exchange.controller');
+const client = require('../../services/client.service')
 
 const router = express.Router();
 router.route('/getActualCoins').get(auth('getActualCoins'), exchangeController.getActualCoins);

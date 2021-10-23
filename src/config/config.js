@@ -63,8 +63,8 @@ module.exports = {
   },
   exchange: {
     binance: {
-      apiKey: envVars.API_KEY,
-      apiSecret: envVars.API_SECRET,
+      apiKey: envVars.BINANCE_API_KEY,
+      apiSecret: envVars.BINANCE_API_SECRET,
     },
   },
 };

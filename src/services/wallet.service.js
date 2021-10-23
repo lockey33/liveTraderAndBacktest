@@ -3,10 +3,9 @@ const requestManager = require('../utils/requestManager');
 
 const getAccount = async () => {
   const options = {recvWindow: 60000}
-  const account = await requestManager.safeRequest("account", [options]);
-  return account.data;
+  const account = await requestManager.safeRequest("fetchBalance");
+  return account.info;
 };
-
 
 const checkPosition = async(params, requirements, inPosition = "0", lastPrice) => {
   let pair = params.asset1 + params.asset2
@@ -59,7 +58,7 @@ const getActualCoins = async() => {
     for(const balance of balances){
       if(balance.pair === price.symbol){
         let newObject = balance
-        newObject.price = price.price
+        newObject.price = price.last
         allTokens.push(newObject)
       }
     }

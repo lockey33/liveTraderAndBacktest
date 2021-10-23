@@ -21,8 +21,7 @@ const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.
 
 const getLimitedCandles = async (params, pair, interval) => {
   let candles = []
-  candles[interval] = await requestManager.safeRequest("klines", [pair, interval, {startTime: params.startTime, limit: params.limit} ]);
-  candles[interval] = candles[interval].data
+  candles[interval] = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
   candles[interval] = await dataFormater.formatAllCandles(candles[interval]);
   if(!params.realTrading) {
     const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
@@ -69,8 +68,7 @@ const getHistoricalData = async (params) => {
 };
 
 const getCandlesUntilDate = async (params, pair, interval) => {
-  let candles = await requestManager.safeRequest("klines", [pair, interval, {startTime: params.startTime, limit: params.limit} ]);
-  candles = candles.data
+  let candles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
   candles = await dataFormater.formatAllCandles(candles);
   let startDate = moment(params.startTime)
   let lastDate = candles[candles.length - 1].openTime
@@ -80,8 +78,7 @@ const getCandlesUntilDate = async (params, pair, interval) => {
   let requiredDate = moment(params.endTime)
 
   while(!moment(lastDate).isSameOrAfter(moment(requiredDate)) && moment(lastDate).isBetween(moment(startDate), moment(requiredDate))){
-    let newCandles = await requestManager.safeRequest("klines", [pair, interval, {startTime: lastTime, limit: params.limit} ]);
-    newCandles = newCandles.data
+    let newCandles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
     newCandles = await dataFormater.formatAllCandles(newCandles);
     candles.pop()
     candles = candles.concat(newCandles)

@@ -1,7 +1,6 @@
 const axios = require("axios");
-const { Spot } = require('@binance/connector');
 const config = require('../config/config');
-const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
+const client = require('../services/client.service')
 
 const sleep = (milliseconds) => {
   console.log("sleeping", milliseconds)
@@ -18,9 +17,9 @@ const getMillisToSleep =  (retryHeaderString) => {
 }
 
 
-const safeRequest = async (functionName, params) => {
+const safeRequest = async (exchanges, functionName, params) => {
   try{
-    const response = await client[functionName](...params)
+    const response = await client[exchanges][functionName](...params);
     return response
   }catch(err){
     console.log(err)
@@ -34,8 +33,6 @@ const safeRequest = async (functionName, params) => {
     }
   }
 }
-
-
 
 
 module.exports = {

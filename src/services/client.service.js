@@ -1,26 +1,9 @@
-const {Spot} = require('@binance/connector');
+const ccxt = require('ccxt')
 const config = require('../config/config');
 
-class Client {
 
-  constructor() {
-    this.client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
-  }
+const binance = new ccxt.binance({apiKey: config.exchange.binance.apiKey, secret: config.exchange.binance.apiSecret, enableRateLimit: true});
 
+module.exports = {
+  binance
 }
-
-class Singleton {
-
-  constructor() {
-    if (!Singleton.instance) {
-      Singleton.instance = new Client();
-    }
-  }
-
-  getInstance() {
-    return Singleton.instance;
-  }
-
-}
-
-module.exports = Singleton;
