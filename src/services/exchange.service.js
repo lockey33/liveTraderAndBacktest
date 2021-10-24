@@ -22,7 +22,7 @@ const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.
 const getLimitedCandles = async (params, pair, interval) => {
   let candles = []
   candles[interval] = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
-  candles[interval] = await dataFormater.formatAllCandles(candles[interval]);
+  candles[interval] = await dataFormater.formatAllCandles(candles[interval], interval);
   if(!params.realTrading) {
     const requirements = await coinInfos.getRequirements(params.asset1 + params.asset2)
     const checkPosition = await wallet.checkPosition(params, requirements, "0", candles[interval][candles[interval].length - 1].close)
@@ -69,17 +69,17 @@ const getHistoricalData = async (params) => {
 
 const getCandlesUntilDate = async (params, pair, interval) => {
   let candles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
-  candles = await dataFormater.formatAllCandles(candles);
+  candles = await dataFormater.formatAllCandles(candles, interval);
   let startDate = moment(params.startTime)
   let lastDate = candles[candles.length - 1].openTime
 
   lastDate = moment(lastDate, "DD-MM-YYYY hh:mm")
   let lastTime = moment(lastDate).valueOf()
   let requiredDate = moment(params.endTime)
-
+  //console.log(moment(lastDate).format("DD-MM-YYYY hh:mm"), moment(startDate).format("DD-MM-YYYY hh:mm"), moment(requiredDate).format("DD-MM-YYYY hh:mm"))
   while(!moment(lastDate).isSameOrAfter(moment(requiredDate)) && moment(lastDate).isBetween(moment(startDate), moment(requiredDate))){
-    let newCandles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
-    newCandles = await dataFormater.formatAllCandles(newCandles);
+    let newCandles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, lastTime, params.limit]);
+    newCandles = await dataFormater.formatAllCandles(newCandles, interval);
     candles.pop()
     candles = candles.concat(newCandles)
 

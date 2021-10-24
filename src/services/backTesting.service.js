@@ -86,8 +86,8 @@ const multiIntervalStrategy = async (candles, params) => {
     }
   }
   let firstIntervalCandles = candles[intervals[0]]
-  //console.table(firstIntervalCandles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-
+  console.table(candles[intervals[0]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+  console.table(candles[intervals[1]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
   firstIntervalCandles.map((candle, index) => {
       const firstIntervalCandle = candle;
       let iterationParams = []
@@ -99,7 +99,6 @@ const multiIntervalStrategy = async (candles, params) => {
           if(iterationUpperInterval !== interval){
             iterationParams[interval] = []
             for(const [index, candleOfInterval] of candles[interval].entries()){
-
               const actualCandleClose = moment(candleOfInterval.closeTime, 'DD-MM-YYYY hh:mm')
               const previousIntervalOpen = moment(params.openTime, 'DD-MM-YYYY hh:mm')
               const previousIntervalClose = moment(params.closeTime, 'DD-MM-YYYY hh:mm')

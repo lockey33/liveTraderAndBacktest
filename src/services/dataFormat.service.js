@@ -27,9 +27,11 @@ const truncateDecimals = (num, digits) => {
   return parseFloat(finalResult);
 };
 
-const formatAllCandles = async (data) => {
+const formatAllCandles = async (candles, interval) => {
   const newArray = [];
-  data.map((candle) => {
+  candles.map((candle) => {
+    let closeTime = addTimeByInterval(candle[0], interval)
+    closeTime = moment(closeTime).format('DD-MM-YYYY HH:mm');
     const newCandle = {};
     newCandle.openTime = moment(candle[0]).format('DD-MM-YYYY HH:mm');
     newCandle.open = candle[1];
@@ -37,11 +39,20 @@ const formatAllCandles = async (data) => {
     newCandle.low = candle[3];
     newCandle.close = candle[4];
     newCandle.volume = candle[5];
-    newCandle.closeTime = moment(candle[6]).format('DD-MM-YYYY HH:mm');
+    newCandle.closeTime = closeTime
     newArray.push(newCandle);
   });
   return newArray;
 };
+
+const addTimeByInterval = (date, interval) => {
+  const intervalString = interval.replace(/[0-9]/g, '');
+  let intervalNumber = interval.match(/\d/g);
+  intervalNumber = intervalNumber.join("");
+  let newDate = moment(date).add(intervalNumber, intervalString)
+  return newDate
+
+}
 
 const formatSocketCandle = async (data) => {
   const candle = {
