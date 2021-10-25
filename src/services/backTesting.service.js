@@ -86,11 +86,12 @@ const multiIntervalStrategy = async (candles, params) => {
     }
   }
   let firstIntervalCandles = candles[intervals[0]]
-  console.table(candles[intervals[0]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-  console.table(candles[intervals[1]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
-  firstIntervalCandles.map((candle, index) => {
+  //console.table(candles[intervals[0]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+  //console.table(candles[intervals[1]],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+  firstIntervalCandles.map((candle, index) => { //boucle sur l'interval le plus grand
       const firstIntervalCandle = candle;
       let iterationParams = []
+      // on garde les infos de la première bougie
       iterationParams[intervals[0]] =  { supertrend: firstIntervalCandle.supertrend,openTime: firstIntervalCandle.openTime, closeTime: firstIntervalCandle.closeTime}
       for(const interval of intervals){
 
@@ -108,19 +109,12 @@ const multiIntervalStrategy = async (candles, params) => {
                 const upperIntervalCandle = iterationParams[iterationUpperInterval]
                 const previousCandle = (candles[interval][index - 1] ? candles[interval][index - 1] : null)
 
-                //console.log('previous', previousCandle.openTime, previousCandle.supertrend, upperIntervalCandle.supertrend)
-                //console.log('current', candleOfInterval.openTime, candleOfInterval.supertrend, upperIntervalCandle.supertrend)
                 if (previousCandle) {
-                  //console.log(upperIntervalCandle.openTime, upperIntervalCandle.supertrend, candleOfInterval.openTime, candleOfInterval.supertrend, previousCandle.supertrend, index)
-                  //console.log(candleOfInterval)
-                  //console.log(upperIntervalCandle)
-                  let clean = cleanIndicators(candle, upperIntervalCandle);
-                  if (candleOfInterval.supertrend === 1 && upperIntervalCandle.supertrend === 1 && newPairBalance.inPosition === 0 && clean) {
+                  if (candleOfInterval.supertrend === 1 && upperIntervalCandle.supertrend === 1 && newPairBalance.inPosition === 0) {
                     newPairBalance.inPosition = 1;
                     buy(initialPairBalance, newPairBalance, candleOfInterval)
                   }
-                  if (candleOfInterval.supertrend === 0 && previousCandle.supertrend !== candleOfInterval.supertrend && newPairBalance.inPosition === 1 && clean) {
-                    //console.log("SELL", candleOfInterval.openTime, upperIntervalCandle.openTime)
+                  if (candleOfInterval.supertrend === 0 && previousCandle.supertrend !== candleOfInterval.supertrend && newPairBalance.inPosition === 1) {
                     newPairBalance.inPosition = 0;
                     sell(initialPairBalance, newPairBalance, candleOfInterval)
                   }
@@ -128,7 +122,6 @@ const multiIntervalStrategy = async (candles, params) => {
                 if (index === candles[interval].length - 1) {
                   sell(initialPairBalance, newPairBalance, candleOfInterval)
                 }
-                //console.log(iterationParams)
               }
             }
 
@@ -145,14 +138,6 @@ const multiIntervalStrategy = async (candles, params) => {
 };
 
 
-const cleanIndicators = (candle, upperCandle) =>{
-  //console.log(upperCandle.openTime, upperCandle.lowerband)
-  if(!isNaN(candle.atr) && !isNaN(candle.lowerband) && !isNaN(candle.upperband)){
-    return true
-  }else{
-    return false
-  }
-}
 const tripleSuperTrendStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [12, 3, 'supertrend1']},{functionName: "superTrend", params: [11, 2, 'supertrend2']}, {functionName: "superTrend", params: [10, 1, 'supertrend3']}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply)

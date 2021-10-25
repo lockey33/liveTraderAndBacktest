@@ -67,8 +67,23 @@ const getHistoricalData = async (params) => {
 
 };
 
+const getStartTimeForToken = async (candles, pair, interval, params) =>{
+  while(candles.length === 0) {
+    console.log(params.startTime)
+    params.startTime = moment(params.startTime).add("10", "days").valueOf();
+    console.log(moment(params.startTime))
+    candles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
+  }
+  return candles
+}
+
 const getCandlesUntilDate = async (params, pair, interval) => {
   let candles = await requestManager.safeRequest("binance", "fetchOHLCV", [pair, interval, params.startTime, params.limit]);
+
+  if(candles.length === 0){
+    candles = await getStartTimeForToken(candles, pair, interval, params)
+  }
+
   candles = await dataFormater.formatAllCandles(candles, interval);
   let startDate = moment(params.startTime)
   let lastDate = candles[candles.length - 1].openTime

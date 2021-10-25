@@ -170,12 +170,7 @@ const makeOrder = async (side, params, currentCandle, actualInterval) => {
   console.log("makeOrder")
 
   let tokenAlreadyBought = false;
-
-  sleep.sleep(10)
-
   let allTokensInPosition = await wallet.getActualCoins()
-
-  sleep.sleep(10)
 
   allTokensInPosition.map((token) => {
     if(token.asset1 === params.asset1){
