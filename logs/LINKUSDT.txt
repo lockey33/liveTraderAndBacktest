@@ -1,3 +1,4 @@
 09-10 21:4 BUY 1.33 LINK
 20-10 11:35 Not enough tokens to make order
 20-10 11:35 minNotional
+25-10 20:22 BUY 1.45 LINK

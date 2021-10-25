@@ -18,10 +18,10 @@ const launch = async () => {
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
   //console.dir(rankedTokens, {'maxArrayLength': null})
   const customCoins = [
-    {"asset1": "BTC", asset2: "USDT", "interval": "4h_1h", "skipTest": true},
+    {"asset1": "BTC", asset2: "USDT", "interval": "4h_1h", "skipTest": true, "customPourcentage": "0.3"},
     {"asset1": "STX", asset2: "USDT", "interval": "8h_2h", "skipTest": true},
-    {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true},
-    {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true},
+    {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true, "customPourcentage": "0.3"},
+    {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true, "customPourcentage": "0.5"},
     ]
   rankedTokens = rankedTokens.slice(0,20)
 

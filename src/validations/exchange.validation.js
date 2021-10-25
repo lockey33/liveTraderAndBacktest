@@ -89,6 +89,7 @@ const socketTrading = {
     strategy: Joi.string().required(),
     realTrading: Joi.string().required(),
     oneOrderSignalPassed: Joi.string().required(),
+    customPourcentage: Joi.string()
   }),
 };
 

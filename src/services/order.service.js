@@ -5,6 +5,7 @@ const wallet = require('./wallet.service');
 const config = require('../config/config');
 const dataFormater = require('./dataFormat.service');
 const telegram = require('./telegram.service');
+console.log(config.exchange.binance)
 const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
 const getPrice = async (pair) => {
@@ -13,8 +14,8 @@ const getPrice = async (pair) => {
 };
 
 
-const getOrderValue = async (side, pairBalance, price, pair) => {
-  const buyPourcentage = 0.1;
+const getOrderValue = async (side, pairBalance, price, pair, params) => {
+  const buyPourcentage = (params.customPourcentage ? parseFloat(params.customPourcentage) : 0.1);
   const sellPourcentage = 1;
 
   let orderValue = null;
@@ -61,14 +62,13 @@ const newOrder = async (orderParams, globalParams) => {
     //await telegram.sendMessage(orderParams.side + " " + pair)
     const pairBalance = await wallet.getPairBalance({asset1: globalParams.asset1, asset2: globalParams.asset2});
     const price = await getPrice(pair);
-    const orderObject = await getOrderValue(orderParams.side, pairBalance, price, pair);
-    console.log("after orderObject")
+    const orderObject = await getOrderValue(orderParams.side, pairBalance, price, pair, globalParams);
+    console.log(pair, orderObject.orderValue)
     if (!orderObject.err) {
 
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
-      console.log("before Buy")
-      const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
-      console.log(orderRes)
+      //const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
+      //console.log(orderRes)
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
 
