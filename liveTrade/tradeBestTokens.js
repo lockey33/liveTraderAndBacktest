@@ -13,16 +13,9 @@ const launch = async () => {
     rankedTokens = tokenList
   }
   rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset2: "USDT"})
-
-  const blackList = ["PERPUSDT", "KLAYUSDT"]
+  const blackList = ["PERPUSDT", "KLAYUSDT", "BTCUSDT", "STXUSDT", "ETHUSDT", "FTMUSDT"]
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  const customCoins = [
-    {"asset1": "BTC", asset2: "USDT", "interval": "4h_1h", "skipTest": true, "customPourcentage": "0.3"},
-    {"asset1": "STX", asset2: "USDT", "interval": "8h_2h", "skipTest": true},
-    {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true, "customPourcentage": "0.3"},
-    {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true, "customPourcentage": "0.5"},
-    ]
   rankedTokens = rankedTokens.slice(0,50)
 
   const params = {
@@ -39,7 +32,7 @@ const launch = async () => {
     buyAtStart: "0",
     minimumProfit: "30"
   }
-  const backTestAll = axios.post('http://localhost:3000/v1/exchange/pair/tradeBestTokens', {data: rankedTokens, params, customCoins, actualCoins})
+  const backTestAll = axios.post('http://localhost:3000/v1/exchange/pair/tradeBestTokens', {data: rankedTokens, params, actualCoins})
 
 }
 

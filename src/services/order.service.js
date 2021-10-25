@@ -5,7 +5,6 @@ const wallet = require('./wallet.service');
 const config = require('../config/config');
 const dataFormater = require('./dataFormat.service');
 const telegram = require('./telegram.service');
-console.log(config.exchange.binance)
 const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
 const getPrice = async (pair) => {
