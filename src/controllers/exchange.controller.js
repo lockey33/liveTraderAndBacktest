@@ -90,10 +90,7 @@ const tradeBestTokens = catchAsync(async(req, res) => {
     let uniqueParams = JSON.parse(JSON.stringify(params))
     uniqueParams.asset1 = token.asset1
     uniqueParams.asset2 = token.asset2
-    if(customCoins.some(c => c.asset1 === token.asset1)){
-      let index = customCoins.map(e => e.asset1).indexOf(token.asset1);
-      uniqueParams.interval = customCoins[index].interval
-    }
+
     delete uniqueParams.startTime
     delete uniqueParams.endTime
     delete uniqueParams.candleFusion

@@ -16,7 +16,7 @@ const launch = async () => {
   const blackList = ["PERPUSDT", "KLAYUSDT", "BTCUSDT", "STXUSDT", "ETHUSDT", "FTMUSDT"]
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  rankedTokens = rankedTokens.slice(0,50)
+  rankedTokens = rankedTokens.slice(0,200)
 
   const params = {
     interval: '8h_4h',
@@ -26,7 +26,7 @@ const launch = async () => {
     formatIndex: '1',
     strategy: 'multiIntervalStrategy',
     //strategy: 'superTrendStrategy',
-    startTime: "01-05-2021 00:00",
+    startTime: "01-10-2021 00:00",
     endTime: "22-10-2021 02:00",
     candleFusion: "1",
     buyAtStart: "0",
