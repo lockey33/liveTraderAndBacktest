@@ -67,8 +67,8 @@ const newOrder = async (orderParams, globalParams) => {
     if (!orderObject.err) {
 
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
-      //const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
-      //console.log(orderRes)
+      const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
+      console.log(orderRes)
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
 
