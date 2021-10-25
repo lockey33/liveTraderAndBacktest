@@ -16,8 +16,8 @@ const launch = async () => {
     const params = {
       interval: "1m",
       limit: '1000',
-      realTrading: "0",
-      signals: '1',
+      realTrading: "1",
+      signals: '0',
       formatIndex: '1',
       asset1: token.asset1,
       asset2: token.asset2,
