@@ -14,7 +14,7 @@ const launch = async () => {
 
   for (const token of customCoins) {
     const params = {
-      interval: "1m",
+      interval: token.interval,
       limit: '1000',
       realTrading: "1",
       signals: '0',
