@@ -10,6 +10,7 @@ const launch = async () => {
     {"asset1": "STX", asset2: "USDT", "interval": "8h_2h", "skipTest": true},
     {"asset1": "ETH", asset2: "USDT", "interval": "4h_1h", "skipTest": true, "customPourcentage": "0.3"},
     {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true, "customPourcentage": "0.5"},
+    {"asset1": "SHIB", asset2: "USDT", "interval": "30m_15m", "skipTest": true, "customPourcentage": "0.1"},
   ]
 
 
