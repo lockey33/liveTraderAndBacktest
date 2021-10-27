@@ -9,16 +9,6 @@ const launch = async () => {
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
 
-  rankedTokens = [
-    {"pair": "BTCUSDT", "asset1": "BTC", "asset2": "USDT"},
-    {"pair": "ETHUSDT", "asset1": "ETH", "asset2": "USDT"},
-    {"pair": "BNBUSDT", "asset1": "BNB", "asset2": "USDT"},
-    {"pair": "ADAUSDT", "asset1": "ADA", "asset2": "USDT"},
-    {"pair": "XRPUSDT", "asset1": "XRP", "asset2": "USDT"},
-    {"pair": "SOLUSDT", "asset1": "SOL", "asset2": "USDT"},
-    {"pair": "DOTUSDT", "asset1": "DOT", "asset2": "USDT"},
-    ]
-
   if(rankedTokens.length === 0){
     rankedTokens = tokenList
   }
@@ -27,7 +17,7 @@ const launch = async () => {
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
 
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  rankedTokens = rankedTokens.slice(0,200)
+  rankedTokens = rankedTokens.slice(0,50)
 
   const params = {
     interval: '8h_4h',
