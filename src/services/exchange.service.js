@@ -14,8 +14,9 @@ const order = require('../services/order.service');
 const backTesting = require('../services/backTesting.service');
 const calculate = require('../utils/calculate');
 const coinInfos = require('../services/coinInfos.service');
-const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
+const database = require('../services/database.service');
 
+const client = new Spot(config.exchange.binance.apiKey, config.exchange.binance.apiSecret);
 
 const getLimitedCandles = async (params, pair, interval) => {
   let candles = []
@@ -192,7 +193,9 @@ const backTest = async (coin) => {
   const results = await backTesting[coin.strategy](candles, coin);
   const pair = results.asset1.asset + results.asset2.asset;
   let filteredResults = {asset1: results.asset1.asset, asset2: results.asset2.asset, pair: pair, profit: results.profit, amount: results.asset2.free,best: results.best, winRate: results.tradeWinRate, minimumWinRate: results.minimumWinRate, totalLose: results.totalLose.toFixed(2), totalProfit: results.totalProfit.toFixed(2), avgLose: results.avgLose, avgProfit: results.avgProfit}
-
+  if(coin.saveInBdd === "1"){
+    await database.savePairInBdd(filteredResults, coin)
+  }
   return filteredResults
 
 }
@@ -205,10 +208,13 @@ const getAllBackTestResults = async (coinList, params) => {
 
   for(const coin of coinList){
     const uniqueParams = JSON.parse(JSON.stringify(params))
+    console.log(params)
     uniqueParams.asset1 = coin.asset1
     uniqueParams.asset2 = coin.asset2
     if(coin.skipTest === true){
-      backTestResults.push({asset1: coin.asset1, asset2: coin.asset2, pair: coin.asset1 + coin.asset2, profit: "100", amount: 100,best: "1", winRate: "100", minimumWinRate: "0", totalLose: "0", totalProfit: "0", avgLose: "0", avgProfit: "0"})
+      let object = {asset1: coin.asset1, asset2: coin.asset2, pair: coin.asset1 + coin.asset2, profit: "100", amount: 100,best: "1", winRate: "100", minimumWinRate: "0", totalLose: "0", totalProfit: "0", avgLose: "0", avgProfit: "0"}
+      backTestResults.push(object)
+
     }else{
       let filteredResult = await backTest(uniqueParams)
       finalCapital += filteredResult.amount
@@ -242,6 +248,9 @@ const getAllBackTestResults = async (coinList, params) => {
   console.log("Average Profit", averageProfit + "%")
   console.log("Final :", finalCapital)
 
+
+
+
   return backTestResults
 }
 
@@ -249,6 +258,7 @@ const getAllBackTestResults = async (coinList, params) => {
 
 const getBestTokens = async(tokens, params) => {
   let backTestResults = await getAllBackTestResults(tokens, params)
+
   let bestTokens = []
 
   for(result of backTestResults){

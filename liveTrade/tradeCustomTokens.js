@@ -12,6 +12,8 @@ const launch = async () => {
     {"asset1": "FTM", asset2: "USDT", "interval": "30m_15m", "skipTest": true, "customPourcentage": "0.5"},
   ]
 
+
+
   for (const token of customCoins) {
     const params = {
       interval: token.interval,

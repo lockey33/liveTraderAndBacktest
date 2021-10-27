@@ -27,7 +27,7 @@ const superTrendEMAStrategy = async (candles, params, actualInterval) => {
       if (params.signals === "1" ) {
         params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-        console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        //console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
         params = await makeOrder("BUY", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
@@ -43,7 +43,7 @@ const superTrendEMAStrategy = async (candles, params, actualInterval) => {
       if (params.signals === "1" ) {
         params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-        console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        //console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
         params = await makeOrder("SELL", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
@@ -74,7 +74,7 @@ const superTrendStrategy = async (candles, params, actualInterval) => {
       if (params.signals === "1") {
         params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-        console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        //console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
         params = await makeOrder("BUY", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
@@ -88,7 +88,7 @@ const superTrendStrategy = async (candles, params, actualInterval) => {
       if (params.signals === "1") {
         params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
       } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-        console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+        //console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
         params = await makeOrder("SELL", params, currentCandle, actualInterval)
       }
       params.oneOrderSignalPassed = "1"
@@ -132,7 +132,7 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
           if (params.signals === "1") {
             params = await sendSignal(params, 'SuperTrend UP | ' + params.asset1 + params.asset2)
           } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-            console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+            //console.table(candlesForInterval, [pair, 'openTime', 'open', 'closeTime', 'close', 'supertrend']);
             params = await makeOrder("BUY", params, currentCandle, actualInterval)
           }
           params.oneOrderSignalPassed = "1"
@@ -146,7 +146,7 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
           if (params.signals === "1") {
             params = await sendSignal(params, 'SuperTrend DOWN | ' + params.asset1 + params.asset2)
           } else if (params.signals === "0" && params.oneOrderSignalPassed === "1") {
-            console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
+            //console.table(candlesForInterval, [pair,'openTime', 'open', 'closeTime', 'close', 'supertrend']);
             params = await makeOrder("SELL", params, currentCandle, actualInterval)
           }
           params.oneOrderSignalPassed = "1"
@@ -167,8 +167,6 @@ const sendSignal = async (params, text) => {
 
 const makeOrder = async (side, params, currentCandle, actualInterval) => {
 
-  console.log("makeOrder")
-  console.log(params)
   let tokenAlreadyBought = false;
 
   let allTokensInPosition = await wallet.getActualCoins()
@@ -183,8 +181,6 @@ const makeOrder = async (side, params, currentCandle, actualInterval) => {
     side: side,
     type: 'MARKET'
   }
-
-
 
   if(side === "BUY" && !tokenAlreadyBought){
     await order.newOrder(orderParams, params, actualInterval);

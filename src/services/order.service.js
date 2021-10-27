@@ -67,7 +67,6 @@ const newOrder = async (orderParams, globalParams) => {
 
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
       const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
-      console.log(orderRes)
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
 
@@ -76,8 +75,8 @@ const newOrder = async (orderParams, globalParams) => {
     }
 
   } catch (err) {
-    console.log(err);
-    await telegram.sendMessage(err.toString())
+    console.log("error on pair", pair);
+    //await telegram.sendMessage(err.toString())
     logsManager.writeLogs(fileName, `${err.response.data.msg.toString()}`);
   }
 
