@@ -118,6 +118,11 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
     const previousUpperIntervalCandle = upperIntervalCandles[upperIntervalCandles.length - 2]
     //console.log(pair, "position", "previousTrend", previousCandle.supertrend, "currentTrend", currentCandle.supertrend, "currentUpperTrend", currentUpperIntervalCandle.supertrend)
 
+    if (params.i === 3) {
+      candles[actualInterval][candles[actualInterval].length - 2].supertrend = 1
+      candles[actualInterval][candles[actualInterval].length - 1].supertrend = 0
+    }
+
     if (
         ((currentCandle.supertrend === 1 &&
           previousCandle.supertrend !== currentCandle.supertrend &&
@@ -166,7 +171,7 @@ const sendSignal = async (params, text) => {
 }
 
 const makeOrder = async (side, params, currentCandle, actualInterval) => {
-
+  console.log("makeOrder")
   let tokenAlreadyBought = false;
 
   let allTokensInPosition = await wallet.getActualCoins()

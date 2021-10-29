@@ -54,6 +54,7 @@ const getOrderValue = async (side, pairBalance, price, pair, params) => {
 
 
 const newOrder = async (orderParams, globalParams) => {
+  console.log('new order')
   const pair = globalParams.asset1 + globalParams.asset2;
   const fileName = pair;
 

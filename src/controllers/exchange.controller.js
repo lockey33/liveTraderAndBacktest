@@ -169,7 +169,7 @@ const getRankedTokens = catchAsync(async (req, res) => {
 
 
 const getExchangeInfos = catchAsync(async (req, res) => {
-  const exchangeInfos = await exchange.getExchangeInfos()
+  const exchangeInfos = await coinInfos.getExchangeInfos()
   res.send({result: "Exchange scraped"})
 })
 

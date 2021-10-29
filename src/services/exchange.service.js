@@ -1,10 +1,8 @@
 const { Spot } = require('@binance/connector');
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
+
 const WebSocket = require('ws');
 const moment = require('moment');
-const appDir = path.resolve('./');
+
 const dataFormater = require('./dataFormat.service');
 const strategy = require('../services/strategy.service');
 const config = require('../config/config');
@@ -151,36 +149,19 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
     params = dataWithIndicators.params
     const fileName = `${params.asset1}${params.asset2}`;
     //logsManager.writeLogs(fileName, JSON.stringify(candles));
+  }else{
+    candles[candles.length - 1] = formatedCandle
+    dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
+    candles = dataWithIndicators.candles[targetInterval]
+    //console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+    params = dataWithIndicators.params
+    const fileName = `${params.asset1}${params.asset2}`;
+    //logsManager.writeLogs(fileName, JSON.stringify(candles));
   }
 
   return { candles, params }
 
 }
-
-const getExchangeInfos = async () => {
-  try {
-    let infos = await axios.get('https://www.binance.com/api/v1/exchangeInfo');
-    infos = infos.data.symbols;
-    const exchangeFile = `${appDir}/static/exchange.json`;
-    fs.truncate(exchangeFile, 0, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    })
-
-    fs.writeFile(exchangeFile, JSON.stringify(infos), { flag: 'a+' }, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    })
-
-  } catch (err) {
-    console.log(err);
-    return 'error while fetching exchange infos';
-  }
-};
-
-
 
 const getBinanceTime = async (data) => {
   const time = client.time();
@@ -303,7 +284,6 @@ module.exports = {
   getBestTokens,
   getHistoricalData,
   getSocketData,
-  getExchangeInfos,
   getBinanceTime,
   manageLastCandle,
   backTest,

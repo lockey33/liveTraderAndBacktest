@@ -47,6 +47,8 @@ const getPairBalance = async (assets) => {
 
 
 const getActualCoins = async() => {
+  console.log("getActualCoins")
+
   const prices = await coinInfos.getAllPrice();
   let account = await getAccount();
   let balances = account.balances
