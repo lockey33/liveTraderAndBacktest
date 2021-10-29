@@ -149,7 +149,7 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
     params = dataWithIndicators.params
     const fileName = `${params.asset1}${params.asset2}`;
     //logsManager.writeLogs(fileName, JSON.stringify(candles));
-  }else{
+  }/*else{
     candles[candles.length - 1] = formatedCandle
     dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
     candles = dataWithIndicators.candles[targetInterval]
@@ -157,7 +157,7 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
     params = dataWithIndicators.params
     const fileName = `${params.asset1}${params.asset2}`;
     //logsManager.writeLogs(fileName, JSON.stringify(candles));
-  }
+  }*/
 
   return { candles, params }
 
