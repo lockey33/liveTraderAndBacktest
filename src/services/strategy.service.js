@@ -106,7 +106,7 @@ const multiIntervalStrategy = async (candles, params, actualInterval) => {
   pair = pair.toUpperCase()
   let intervals = Object.keys(candles)
   const upperIntervalCandles = candles[intervals[0]]
-  console.log("Itération :", params.i)
+  //console.log("Itération :", params.i)
 
   if (params.lowestInterval === actualInterval) {
 
