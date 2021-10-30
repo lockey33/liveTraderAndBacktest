@@ -4,20 +4,21 @@ const dataManager = require('../src/utils/dataManager');
 
 const launch = async () => {
   const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
-  let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
-  rankedTokens = rankedTokens.data.result
+  //let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
+  //rankedTokens = rankedTokens.data.result
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
-
+  let rankedTokens = []
   if(rankedTokens.length === 0){
     rankedTokens = tokenList
+    console.log(tokenList)
   }
   rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset2: "USDT"})
-  const blackList = ["PERPUSDT", "KLAYUSDT", "BTCUSDT", "STXUSDT", "ETHUSDT", "FTMUSDT"]
+  const blackList = ["PERPUSDT", "KLAYUSDT", "BTCUSDT", "STXUSDT", "ETHUSDT", "FTMUSDT", "SHIBUSDT"]
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
 
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  rankedTokens = rankedTokens.slice(0,50)
+  rankedTokens = rankedTokens.slice(0,100)
 
   const params = {
     interval: '8h_4h',
@@ -28,7 +29,7 @@ const launch = async () => {
     strategy: 'multiIntervalStrategy',
     //strategy: 'superTrendStrategy',
     startTime: "01-05-2021 00:00",
-    endTime: "22-10-2021 02:00",
+    endTime: "29-10-2021 02:00",
     candleFusion: "1",
     buyAtStart: "0",
     minimumProfit: "30"
