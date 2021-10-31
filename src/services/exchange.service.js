@@ -240,7 +240,8 @@ const getBestTokens = async(tokens, params) => {
   let backTestResults = await getAllBackTestResults(tokens, params)
 
   let bestTokens = []
-
+  console.log('here')
+  console.table(backTestResults)
   for(result of backTestResults){
 
     if(parseFloat(result.profit) > params.minimumProfit && result.best === "1"){

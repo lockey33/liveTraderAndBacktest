@@ -6,19 +6,19 @@ const launch = async () => {
   const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
   //let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   //rankedTokens = rankedTokens.data.result
+
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
   let rankedTokens = []
   if(rankedTokens.length === 0){
     rankedTokens = tokenList
-    console.log(tokenList)
   }
   rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset2: "USDT"})
   const blackList = ["PERPUSDT", "KLAYUSDT", "BTCUSDT", "STXUSDT", "ETHUSDT", "FTMUSDT", "SHIBUSDT"]
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
 
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  rankedTokens = rankedTokens.slice(0,100)
+  rankedTokens = rankedTokens.slice(0,2)
 
   const params = {
     interval: '8h_4h',

@@ -1,0 +1,16 @@
+[
+  {"pair": "BTCUSDT", "asset1": "BTC", "asset2": "USDT"},
+  {"pair": "ETHUSDT", "asset1": "ETH", "asset2": "USDT"},
+  {"pair": "LTCUSDT", "asset1": "LTC", "asset2": "USDT"},
+  {"pair": "XRPUSDT", "asset1": "XRP", "asset2": "USDT"},
+  {"pair": "LTCUSDT", "asset1": "LTC", "asset2": "USDT"},
+  {"pair": "DOTUSDT", "asset1": "DOT", "asset2": "USDT"},
+  {"pair": "BCHUSDT", "asset1": "BCH", "asset2": "USDT"},
+  {"pair": "ADAUSDT", "asset1": "ADA", "asset2": "USDT"},
+  {"pair": "BNBUSDT", "asset1": "BNB", "asset2": "USDT"},
+  {"pair": "LINKUSDT", "asset1": "LINK", "asset2": "USDT"},
+  {"pair": "EOSUSDT", "asset1": "EOS", "asset2": "USDT"},
+  {"pair": "VETUSDT", "asset1": "VET", "asset2": "USDT"},
+  {"pair": "XTZUSDT", "asset1": "XTZ", "asset2": "USDT"},
+  {"pair": "UNIUSDT", "asset1": "UNI", "asset2": "USDT"}
+]

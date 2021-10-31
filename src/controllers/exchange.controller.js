@@ -72,7 +72,6 @@ const tradeBestTokens = catchAsync(async(req, res) => {
   let coinList = req.body.data
   const params = req.body.params
   const actualCoins = req.body.actualCoins
-  console.table(coinList)
   actualCoins.map((actualCoin) => {
     let foundCoin = false;
     coinList.map((coin) => {
@@ -85,6 +84,8 @@ const tradeBestTokens = catchAsync(async(req, res) => {
       coinList.push(actualCoin)
     }
   })
+  console.table(coinList)
+
   let bestTokens = await exchange.getBestTokens(coinList, params)
 
   for(const token of bestTokens) {

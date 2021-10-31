@@ -18,20 +18,23 @@ const getOrderValue = async (side, pairBalance, price, pair, params) => {
   const sellPourcentage = 1;
 
   let orderValue = null;
+  let usdAmount = null;
   let requirements = await coinInfos.getRequirements(pair);
   const decimalPosition = requirements.stepSize.toString().indexOf('1');
   let results = {}
 
-  if (side.toUpperCase() === 'BUY') {
+  if (side.toUpperCase() === 'BUY') { // price = USDT
     orderValue = (pairBalance.asset2.free * buyPourcentage) / price; // 104 * 0.2 = 52 / 404 = 0.12
     orderValue = parseFloat(orderValue);
     orderValue = ((orderValue + requirements.stepSize / 2) / requirements.stepSize) * requirements.stepSize;
     orderValue = dataFormater.fixedNumber(orderValue, decimalPosition - 1);
+    usdAmount = price * orderValue
   } else if (side.toUpperCase() === 'SELL') {
     orderValue = price * pairBalance.asset1.free * sellPourcentage;
     orderValue /= price;
     orderValue = ((orderValue - requirements.stepSize / 2) / requirements.stepSize) * requirements.stepSize;
     orderValue = dataFormater.truncateDecimals(orderValue, decimalPosition - 1);
+    usdAmount = orderValue * price
   }
 
   if (orderValue < parseFloat(requirements.minQty)) {
@@ -47,6 +50,7 @@ const getOrderValue = async (side, pairBalance, price, pair, params) => {
     logsManager.writeLogs(fileName, 'minNotional');
     results.err = "minNotional"
   }
+  results.usdAmount = parseFloat(usdAmount).toFixed(2) + " $"
   results.orderValue = orderValue
   console.log("return OrderValue")
   return results;
@@ -69,10 +73,10 @@ const newOrder = async (orderParams, globalParams) => {
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
       const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
-      await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase())
+      await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase() + " for " + orderObject.usdAmount)
 
     } else {
-      await telegram.sendMessage(orderParams.side.toUpperCase() + " error : " + orderObject.err.toString() + " " + pair.toUpperCase())
+      await telegram.sendMessage(orderParams.side.toUpperCase() + " error : " + orderObject.err.toString() + " " + pair.toUpperCase() + " for " + orderObject.usdAmount)
     }
 
   } catch (err) {

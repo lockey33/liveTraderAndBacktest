@@ -77,6 +77,7 @@ const getActualCoins = async() => {
       }
     }
   }
+  console.table(tokenInPosition)
   return tokenInPosition;
 }
 
