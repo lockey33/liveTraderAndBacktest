@@ -18,7 +18,7 @@ const launch = async () => {
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
 
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  rankedTokens = rankedTokens.slice(0,2)
+  rankedTokens = rankedTokens.slice(0,100)
 
   const params = {
     interval: '8h_4h',
