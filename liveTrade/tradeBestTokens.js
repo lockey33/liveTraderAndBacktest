@@ -4,12 +4,12 @@ const dataManager = require('../src/utils/dataManager');
 
 const launch = async () => {
   const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
-  //let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
-  //rankedTokens = rankedTokens.data.result
+  let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
+  rankedTokens = rankedTokens.data.result
 
   let actualCoins = await axios.get('http://localhost:3000/v1/exchange/getActualCoins')
   actualCoins = actualCoins.data
-  let rankedTokens = []
+  //let rankedTokens = []
   if(rankedTokens.length === 0){
     rankedTokens = tokenList
   }
