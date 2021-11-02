@@ -6,7 +6,7 @@ const appDir = path.resolve('./');
 const launch = async () => {
 
   const customCoins = [
-    {"asset1": "BTC", asset2: "USDT", "interval": "8h_4h", "skipTest": true, "customPourcentage": "0.5"},
+    {"asset1": "BTC", asset2: "USDT", "interval": "8h_4h", "skipTest": true, "customPourcentage": "0.2"},
     {"asset1": "ETH", asset2: "USDT", "interval": "8h_4h", "skipTest": true, "customPourcentage": "0.5"},
     {"asset1": "FTM", asset2: "USDT", "interval": "8h_4h", "skipTest": true, "customPourcentage": "0.1"},
     {"asset1": "SHIB", asset2: "USDT", "interval": "30m_15m", "skipTest": true, "customPourcentage": "0.1"},
