@@ -6,7 +6,7 @@ const getLatestCoinMarketCap = async() => {
   const apiKey = 'ac8ce2bb-5321-47a7-915f-c672af08819e';
   let results = null;
   try{
-    results = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=ac8ce2bb-5321-47a7-915f-c672af08819e&start=1&limit=4000')
+    results = await axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=ac8ce2bb-5321-47a7-915f-c672af08819e&start=1&limit=1000')
     results = results.data.data;
 
     let filtered = []

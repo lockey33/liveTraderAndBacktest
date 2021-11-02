@@ -18,18 +18,18 @@ const launch = async () => {
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
 
   //console.dir(rankedTokens, {'maxArrayLength': null})
-  rankedTokens = rankedTokens.slice(0,100)
+  rankedTokens = rankedTokens.slice(0,50)
 
   const params = {
     interval: '8h_4h',
-    limit: '1000',
+    limit: '200',
     realTrading: "1",
     signals: '0',
     formatIndex: '1',
     strategy: 'multiIntervalStrategy',
     //strategy: 'superTrendStrategy',
     startTime: "01-05-2021 00:00",
-    endTime: "29-10-2021 02:00",
+    endTime: "31-10-2021 02:00",
     candleFusion: "1",
     buyAtStart: "0",
     minimumProfit: "30"
