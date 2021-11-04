@@ -21,13 +21,13 @@ const launch = async () => {
 
   const params = {
     interval: '8h_4h',
-    limit: '200',
+    limit: '400',
     realTrading: "1",
     signals: '0',
     formatIndex: '1',
     strategy: 'multiIntervalStrategy',
     //strategy: 'superTrendStrategy',
-    startTime: "20-10-2021 00:00",
+    startTime: "20-05-2021 00:00",
     endTime: "03-11-2021 14:00",
     candleFusion: "1",
     buyAtStart: "0",
