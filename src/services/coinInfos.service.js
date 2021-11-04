@@ -44,15 +44,6 @@ const getPairInfos = async (pair) => {
     }
   });
 
-  for(let i = 0; i < 3; i++){
-    if(!data.filters){
-      await getExchangeInfos()
-      await getPairInfos()
-    }
-    i++;
-  }
-
-
   return data;
 };
 

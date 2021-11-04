@@ -13,7 +13,6 @@ const launch = async () => {
   if(rankedTokens.length === 0){
     rankedTokens = tokenList
   }
-  rankedTokens.push({"pair": "ILVUSDT", asset1: "ILV", asset2: "USDT"})
   const blackList = ["PERPUSDT", "KLAYUSDT", "BTCUSDT", "STXUSDT", "ETHUSDT", "FTMUSDT", "SHIBUSDT"]
   rankedTokens = await dataManager.manageBlackList(blackList, rankedTokens)
 
@@ -28,11 +27,11 @@ const launch = async () => {
     formatIndex: '1',
     strategy: 'multiIntervalStrategy',
     //strategy: 'superTrendStrategy',
-    startTime: "01-05-2021 00:00",
-    endTime: "31-10-2021 02:00",
+    startTime: "20-10-2021 00:00",
+    endTime: "03-11-2021 14:00",
     candleFusion: "1",
     buyAtStart: "0",
-    minimumProfit: "30"
+    minimumProfit: "30",
   }
   const backTestAll = axios.post('http://localhost:3000/v1/exchange/pair/tradeBestTokens', {data: rankedTokens, params, actualCoins})
 
