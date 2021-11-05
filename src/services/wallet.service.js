@@ -71,7 +71,7 @@ const getActualCoins = async() => {
   for(const token of allTokens){
     let minNotional =  token.price * token.free
     let requirements = await coinInfos.getRequirements(token.pair);
-    if(!token.asset.includes("BUSD")){
+    if(!token.asset.includes("BUSD") && requirements !== null){
       if (token.free > requirements.minQty && minNotional > requirements.minNotional) {
         tokenInPosition.push({pair: token.pair,asset1: token.asset, asset2: "USDT", inPosition: true} )
       }

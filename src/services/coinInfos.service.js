@@ -50,22 +50,25 @@ const getPairInfos = async (pair) => {
 const getRequirements = async (pair) => {
   const pairInfos = await getPairInfos(pair);
   let requirements = null;
-
-  pairInfos.filters.map((filter) => {
-    if (filter.filterType === 'LOT_SIZE') {
-      requirements = filter;
-      requirements.minQty = parseFloat(requirements.minQty);
-      requirements.stepSize = parseFloat(requirements.stepSize);
-    }
-    if (filter.filterType === "MIN_NOTIONAL") {
-      if (requirements !== null) {
-        requirements.minNotional = parseFloat(filter.minNotional)
-      } else {
+  //console.log(pair, pairInfos)
+  if(pairInfos.hasOwnProperty('filters')){
+    pairInfos.filters.map((filter) => {
+      if (filter.filterType === 'LOT_SIZE') {
         requirements = filter;
-        requirements.minNotional = parseFloat(requirements.minNotional)
+        requirements.minQty = parseFloat(requirements.minQty);
+        requirements.stepSize = parseFloat(requirements.stepSize);
       }
-    }
-  });
+      if (filter.filterType === "MIN_NOTIONAL") {
+        if (requirements !== null) {
+          requirements.minNotional = parseFloat(filter.minNotional)
+        } else {
+          requirements = filter;
+          requirements.minNotional = parseFloat(requirements.minNotional)
+        }
+      }
+    });
+  }
+
   return requirements;
 }
 

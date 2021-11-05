@@ -71,6 +71,7 @@ const manageBackTestEntry = async(candles, params) => {
 
 
 const multiIntervalStrategy = async (candles, params) => {
+  let globalParams = params
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
   const allCandles = await dataManager.applyIndicators(candles, indicatorsToApply)
   //console.table(allCandles["5m"],['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
@@ -128,6 +129,13 @@ const multiIntervalStrategy = async (candles, params) => {
                 }
                 if (index === candles[interval].length - 1) {
                   sell(initialPairBalance, newPairBalance, candleOfInterval)
+                }
+                if(globalParams.takeProfit && interval === intervals[intervals.length - 1]){
+                  enableTakeProfit(globalParams, initialPairBalance, newPairBalance, candleOfInterval)
+                }
+
+                if(globalParams.stopLoss && interval === intervals[intervals.length - 1]){
+                  enableStopLoss(globalParams, initialPairBalance, newPairBalance, candleOfInterval)
                 }
                 //console.log(iterationParams)
               }
@@ -262,16 +270,18 @@ const enableTakeProfit = (params, initialPairBalance, newPairBalance, currentCan
     newPairBalance.trades.length > 0 &&
     newPairBalance.trades[newPairBalance.trades.length - 1].type === "BUY")
   {
+
     const lastTrade = newPairBalance.trades[newPairBalance.trades.length - 1]
     const actualValueOfWallet = currentCandle.close * parseFloat(newPairBalance.asset1.free);
     const profit = calculate.calculateDifference(lastTrade.valueOfWalletAtBuy, actualValueOfWallet);
 
-    console.log(currentCandle.openTime, lastTrade.valueOfWalletAtBuy, actualValueOfWallet, profit)
-    if(profit > params.takeProfit){
+    if(parseFloat(profit) > parseFloat(params.takeProfit)){
+      console.log("takeProfit at :", currentCandle.openTime)
       newPairBalance.takeProfitHit += 1;
       sell(initialPairBalance, newPairBalance, currentCandle);
     }
   }
+
 
 }
 
@@ -285,7 +295,7 @@ const enableStopLoss = (params, initialPairBalance, newPairBalance, currentCandl
     const profit = calculate.calculateDifference(lastTrade.valueOfWalletAtBuy, actualValueOfWallet);
 
     console.log(currentCandle.openTime, lastTrade.valueOfWalletAtBuy, actualValueOfWallet, profit)
-    if(profit < -Math.abs(params.stopLoss)){
+    if(parseFloat(profit) < -Math.abs(parseFloat(params.stopLoss))){
       console.log("STOPLOSS", currentCandle.openTime);
       newPairBalance.stopLossHit += 1;
       sell(initialPairBalance, newPairBalance, currentCandle);
