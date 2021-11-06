@@ -69,14 +69,15 @@ const newOrder = async (orderParams, globalParams) => {
     const orderObject = await getOrderValue(orderParams.side, pairBalance, price, pair, globalParams);
     console.log(pair, orderObject.orderValue)
     if (!orderObject.err) {
-
       const options = {quantity: orderObject.orderValue, recvWindow: 60000};
       const orderRes = await client.newOrder(pair, orderParams.side, orderParams.type, options);
       logsManager.writeLogs(fileName, `${orderParams.side} ${orderObject.orderValue} ${globalParams.asset1}`);
       await telegram.sendMessage(orderParams.side.toUpperCase() + " " + pair.toUpperCase() + " for " + orderObject.usdAmount)
-
     } else {
-      await telegram.sendMessage(orderParams.side.toUpperCase() + " error : " + orderObject.err.toString() + " " + pair.toUpperCase() + " for " + orderObject.usdAmount)
+      console.log(orderParams.side.toUpperCase() + " error : " + orderObject.err.toString() + " " + pair.toUpperCase() + " for " + orderObject.usdAmount)
+      if(orderObject.usdAmount.toString() !== "0.00 $"){
+        await telegram.sendMessage(orderParams.side.toUpperCase() + " error : " + orderObject.err.toString() + " " + pair.toUpperCase() + " for " + orderObject.usdAmount)
+      }
     }
 
   } catch (err) {
