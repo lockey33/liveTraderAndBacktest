@@ -3,3 +3,4 @@
 18-10 17:5 Not enough tokens to make order
 18-10 17:5 minNotional
 05-11 09:54 BUY 1.58 CAKE
+10-11 16:47 SELL 1.65 CAKE

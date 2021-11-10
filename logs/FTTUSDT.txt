@@ -1,3 +1,4 @@
 29-09 15:32 Filter failure: MIN_NOTIONAL
 29-09 15:33 Filter failure: MIN_NOTIONAL
 29-09 15:34 Filter failure: MIN_NOTIONAL
+10-11 16:47 SELL 0.6 FTT

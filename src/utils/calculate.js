@@ -57,7 +57,7 @@ const avgResults = (balance) => {
   balance.minimumWinRate = (parseFloat(balance.avgLose) / (balance.avgProfit)).toFixed(2) * 100
   balance.minimumWinRate = parseFloat(balance.minimumWinRate).toFixed(2)
   balance.minimumWinRate = (balance.minimumWinRate < 0 ? Math.abs(balance.minimumWinRate) : balance.minimumWinRate);
-  balance.minimumWinRate = parseFloat(balance.minimumWinRate) + 20
+  balance.minimumWinRate = parseFloat(balance.minimumWinRate) + 2
   balance.best = (parseFloat(balance.tradeWinRate) > parseFloat(balance.minimumWinRate) ? "1" : "0")
   return balance
 }

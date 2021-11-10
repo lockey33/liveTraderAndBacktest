@@ -170,10 +170,28 @@ const getBinanceTime = async (data) => {
 
 
 const backTest = async (coin) => {
+  console.log('HERE COIN', coin)
+  let position = coin.inPosition
+  console.log(position)
   const candles = await getHistoricalData(coin);
   const results = await backTesting[coin.strategy](candles, coin);
   const pair = results.asset1.asset + results.asset2.asset;
-  let filteredResults = {asset1: results.asset1.asset, asset2: results.asset2.asset, pair: pair, profit: results.profit, amount: results.asset2.free,best: results.best, winRate: results.tradeWinRate, minimumWinRate: results.minimumWinRate, totalLose: results.totalLose.toFixed(2), totalProfit: results.totalProfit.toFixed(2), avgLose: results.avgLose, avgProfit: results.avgProfit}
+  console.log('here position', coin.inPosition)
+  let filteredResults = {
+    inPosition: position,
+    asset1: results.asset1.asset,
+    asset2: results.asset2.asset,
+    pair: pair,
+    profit: results.profit,
+    amount: results.asset2.free,
+    best: results.best,
+    winRate: results.tradeWinRate,
+    minimumWinRate: results.minimumWinRate,
+    totalLose: results.totalLose.toFixed(2),
+    totalProfit: results.totalProfit.toFixed(2),
+    avgLose: results.avgLose,
+    avgProfit: results.avgProfit,
+  };
   if(coin.saveInBdd === "1"){
     await database.savePairInBdd(filteredResults, coin)
   }
@@ -189,14 +207,16 @@ const getAllBackTestResults = async (coinList, params) => {
 
   for(const coin of coinList){
     const uniqueParams = JSON.parse(JSON.stringify(params))
-    console.log(params)
+    console.log('params here', params)
     uniqueParams.asset1 = coin.asset1
     uniqueParams.asset2 = coin.asset2
+    uniqueParams.inPosition = coin.inPosition
     if(coin.skipTest === true){
       let object = {asset1: coin.asset1, asset2: coin.asset2, pair: coin.asset1 + coin.asset2, profit: "100", amount: 100,best: "1", winRate: "100", minimumWinRate: "0", totalLose: "0", totalProfit: "0", avgLose: "0", avgProfit: "0"}
       backTestResults.push(object)
     }else{
       let filteredResult = await backTest(uniqueParams)
+      console.log('res', filteredResult)
       finalCapital += filteredResult.amount
       backTestResults.push(filteredResult)
     }
@@ -240,14 +260,17 @@ const getBestTokens = async(tokens, params) => {
   let backTestResults = await getAllBackTestResults(tokens, params)
 
   let bestTokens = []
-  console.log('here')
-  console.table(backTestResults)
+  //console.log('here')
+  //console.table(backTestResults)
   for(result of backTestResults){
 
     if(parseFloat(result.profit) > params.minimumProfit && result.best === "1"){
       bestTokens.push(result)
     }else{
+      //console.log('else')
+      //console.log(result)
       if(result.inPosition === true){
+        //console.log('SELLLLLLLLLL', result)
         await order.newOrder({side: "SELL", type: "MARKET"}, {asset1: result.asset1, asset2: result.asset2, inPosition: "1"})
       }
     }
