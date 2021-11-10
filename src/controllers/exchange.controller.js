@@ -78,12 +78,16 @@ const tradeBestTokens = catchAsync(async(req, res) => {
       if(actualCoin.asset1 === coin.asset1){
         coin.inPosition = true
         foundCoin = true
-      }else{
-        coin.inPosition = false
       }
     })
     if(foundCoin === false){
       coinList.push(actualCoin)
+    }
+  })
+
+  coinList.map((coin) => {
+    if(!coin.inPosition){
+      coin.inPosition = false
     }
   })
   console.table(coinList)

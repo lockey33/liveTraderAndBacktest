@@ -172,8 +172,8 @@ const getBinanceTime = async (data) => {
 const backTest = async (coin) => {
   console.log('HERE COIN', coin)
   let position = coin.inPosition
-  console.log(position)
   const candles = await getHistoricalData(coin);
+
   const results = await backTesting[coin.strategy](candles, coin);
   const pair = results.asset1.asset + results.asset2.asset;
   console.log('here position', coin.inPosition)
