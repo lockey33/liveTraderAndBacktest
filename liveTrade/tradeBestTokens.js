@@ -28,7 +28,7 @@ const launch = async () => {
     strategy: 'supeTrendStrategy',
     //strategy: 'superTrendStrategy',
     startTime: "01-01-2021 00:00",
-    endTime: "21-11-2021 14:00",
+    endTime: "19-11-2021 00:00",
     candleFusion: "1",
     buyAtStart: "0",
     minimumProfit: "30",
