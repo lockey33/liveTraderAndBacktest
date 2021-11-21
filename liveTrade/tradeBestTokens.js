@@ -25,7 +25,7 @@ const launch = async () => {
     realTrading: "1",
     signals: '0',
     formatIndex: '1',
-    strategy: 'supeTrendStrategy',
+    strategy: 'superTrendStrategy',
     //strategy: 'superTrendStrategy',
     startTime: "01-01-2021 00:00",
     endTime: "19-11-2021 00:00",
