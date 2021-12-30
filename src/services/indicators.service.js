@@ -1,5 +1,6 @@
 const indicators = require('technicalindicators');
 const dataFormater = require('./dataFormat.service');
+const Ichimoku = require('ichimoku')
 /* eslint-disable no-param-reassign */
 
 const EMA = async(data, period) => {
@@ -12,6 +13,43 @@ const EMA = async(data, period) => {
   });
   return data;
 };
+
+const ichimoku = async(data) => {
+  const ichimoku = new Ichimoku({
+    conversionPeriod : 9,
+    basePeriod       : 26,
+    spanPeriod       : 52,
+    displacement     : 26,
+    values           : []
+  })
+  let candles = []
+  for( let [index, candle] of data.entries() ) {
+    let ichimokuValue = ichimoku.nextValue({
+      high  : candle.high,
+      low   : candle.low,
+      close : candle.close,
+    })
+    if(index >= 25){
+      if(ichimokuValue && ichimokuValue.spanA !== 0 && ichimokuValue.spanB !== 0){
+        let ichimokuObject = Object.assign({}, candle, ichimokuValue)
+        candles.push(ichimokuObject)
+      }
+    }
+  }
+
+  for([index, candle] of candles.entries()){
+    if(index >= 25){
+      const lagging = candles[index - 25]
+      candles[index].laggingTime = lagging.openTime
+      candles[index].laggingBase = lagging.base
+      candles[index].laggingSpanB = lagging.spanB
+    }
+  }
+
+  candles.pop()
+  return candles;
+};
+
 
 const ATR = async (data, period) => {
   const candles = await dataFormater.talibFormat(data);
@@ -67,4 +105,5 @@ module.exports = {
   EMA,
   ATR,
   superTrend,
+  ichimoku
 };

@@ -2,7 +2,112 @@ const calculate = require('../utils/calculate');
 const indicators = require('./indicators.service');
 const logsManager = require('../utils/logsManager');
 const dataManager = require('../utils/dataManager');
+const telegram = require('../services/telegram.service');
 const moment = require('moment');
+
+
+
+const ichimokuResistanceStrategy = async (candles, params) => {
+  let indicatorsToApply = [{functionName: "ichimoku", params: [candles]}]
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply)
+  console.table(candles["4h"],['openTime', 'open', 'closeTime', 'close', 'conversion', 'base', 'spanA', 'spanB', 'laggingBase', 'laggingSpanB']);
+
+  let intervals = Object.keys(candles)
+  const balance = initBalance(candles[intervals[0]], params)
+  const initialPairBalance = balance.initialPairBalance
+  let newPairBalance = balance.newPairBalance
+
+  for(const interval of intervals){
+    let candlesForInterval = candles[interval]
+    //console.table(candlesForInterval,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+    if(candlesForInterval[0].supertrend === 1){
+      buy(initialPairBalance, newPairBalance, candlesForInterval[0])
+    }
+    candlesForInterval.map((candle, index) => {
+
+      const currentCandle = candle;
+      const previousCandle = candlesForInterval[index - 1];
+      currentCandle.close = parseFloat(currentCandle.close)
+      const nearResistance = currentCandle.spanB * 0.98
+      const nearResistanceMax = currentCandle.spanB * 1.02
+
+      if (previousCandle) {
+        if(currentCandle.hasOwnProperty("openTime") && currentCandle.hasOwnProperty("closeTime") && currentCandle.hasOwnProperty("laggingTime")){
+          //console.log("current: ", currentCandle.openTime, currentCandle.closeTime, "close", currentCandle.close, "spanB", currentCandle.spanB, "near", nearResistance, "nearMax", nearResistanceMax, "lagging :", currentCandle.laggingTime, "base", currentCandle.laggingBase, "laggingB", currentCandle.laggingSpanB)
+          //console.log(currentCandle.close, nearResistance, nearResistanceMax, )
+        }
+        //1000 >= 1010 && 1000 <= 1020
+        if ((currentCandle.close >= nearResistance && currentCandle.close <= nearResistanceMax) && (currentCandle.close > currentCandle.base))
+        {
+          console.log("current: ", currentCandle.openTime, currentCandle.closeTime, "close", "Near Resistance")
+        }
+
+      }
+
+    });
+
+
+    logsManager.showResults(initialPairBalance, newPairBalance)
+  }
+
+  return newPairBalance
+}
+
+const ichimokuStrategy = async (candles, params) => {
+  let indicatorsToApply = [{functionName: "ichimoku", params: [candles]}]
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply)
+  console.table(candles["4h"],['openTime', 'open', 'closeTime', 'close', 'conversion', 'base', 'spanA', 'spanB', 'laggingBase', 'laggingSpanB']);
+
+  let intervals = Object.keys(candles)
+  const balance = initBalance(candles[intervals[0]], params)
+  const initialPairBalance = balance.initialPairBalance
+  let newPairBalance = balance.newPairBalance
+
+  for(const interval of intervals){
+    let candlesForInterval = candles[interval]
+    //console.table(candlesForInterval,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
+    if(candlesForInterval[0].supertrend === 1){
+      buy(initialPairBalance, newPairBalance, candlesForInterval[0])
+    }
+    candlesForInterval.map((candle, index) => {
+
+      const currentCandle = candle;
+      const previousCandle = candlesForInterval[index - 1];
+      currentCandle.close = parseFloat(currentCandle.close)
+      const nearResistance = currentCandle.spanB * 1.01
+
+      if (previousCandle) {
+        if(currentCandle.hasOwnProperty("openTime") && currentCandle.hasOwnProperty("closeTime") && currentCandle.hasOwnProperty("laggingTime")){
+          console.log("current: ", currentCandle.openTime, currentCandle.closeTime, "close", currentCandle.close, "spanB", currentCandle.spanB, "near", nearResistance, "lagging :", currentCandle.laggingTime, "base", currentCandle.laggingBase, "laggingB", currentCandle.laggingSpanB)
+        }
+        if (currentCandle.close >= nearResistance && currentCandle.close > currentCandle.base)
+        {
+          buy(initialPairBalance, newPairBalance, currentCandle)
+        }
+        if (currentCandle.close < currentCandle.base) //close supérieur a kijun
+         {
+          sell(initialPairBalance, newPairBalance, currentCandle)
+        }
+      }
+      if (index === candlesForInterval.length - 1 && interval === intervals[intervals.length - 1]) {
+        sell(initialPairBalance, newPairBalance, currentCandle)
+      }
+      if(params.takeProfit && interval === intervals[intervals.length - 1]){
+        enableTakeProfit(params, initialPairBalance, newPairBalance, currentCandle)
+      }
+
+      if(params.stopLoss && interval === intervals[intervals.length - 1]){
+        enableStopLoss(params, initialPairBalance, newPairBalance, currentCandle)
+      }
+
+    });
+
+
+    logsManager.showResults(initialPairBalance, newPairBalance)
+  }
+
+  return newPairBalance
+}
 
 const superTrendEMAStrategy = async (candles, params) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}, {functionName: "EMA", params: [200]}]
@@ -362,6 +467,8 @@ const initBalance = (candles, params) => {
 }
 
 module.exports = {
+  ichimokuResistanceStrategy,
+  ichimokuStrategy,
   superTrendEMAStrategy,
   superTrendStrategy,
   tripleSuperTrendStrategy,

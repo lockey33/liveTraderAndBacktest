@@ -4,6 +4,11 @@ const indicators = require('./indicators.service');
 const telegram = require('./telegram.service');
 const dataManager = require('../utils/dataManager');
 const sleep = require('sleep');
+const calculate = require('../utils/calculate');
+
+
+
+
 
 const superTrendEMAStrategy = async (candles, params, actualInterval) => {
   let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
@@ -192,18 +197,49 @@ const makeOrder = async (side, params, currentCandle, actualInterval) => {
   return params
 }
 
-
-const superTrendFind = async (candles, params) => {
-  let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
+const ichimokuStrategy = async (candles, params) => {
+  let indicatorsToApply = [{functionName: "ichimoku", params: [candles]}]
   candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
-
+  //console.log(params)
   let intervals = Object.keys(candles)
   for (const interval of intervals) {
     let candlesForInterval = candles[interval]
 
+    const previousCandle = candlesForInterval[candlesForInterval.length - 2];
+
+    if (previousCandle) {
+      const currentCandle = candlesForInterval[candlesForInterval.length - 1]; // pas besoin de boucle ici grâce au socket trading
+      currentCandle.close = parseFloat(currentCandle.close)
+      const nearResistance = currentCandle.spanB * 0.98
+      const nearResistanceMax = currentCandle.spanB * 1.02
+      console.log(currentCandle.close, nearResistance, nearResistanceMax, currentCandle.spanB)
+      if (
+        ((currentCandle.close >= nearResistance && currentCandle.close <= nearResistanceMax)  && params.alreadySignaled !== "1")
+      ) {
+          console.log("near Resistance", currentCandle.close, nearResistance, nearResistanceMax, currentCandle.spanB)
+          params.alreadySignaled = "1"
+          await telegram.sendMessage('Near resistance: ' + params.asset1 + params.asset2)
+      }
+    }
+
+  }
+
+  return {candles, params}
+};
+
+
+
+const superTrendFind = async (candles, params) => {
+  let indicatorsToApply = [{functionName: "superTrend", params: [10, 3, 'supertrend']}]
+  candles = await dataManager.applyIndicators(candles, indicatorsToApply, params.realTrading)
+  let intervals = Object.keys(candles)
+  for (const interval of intervals) {
+    let candlesForInterval = candles[interval]
+
+    const previousCandle = candlesForInterval[candlesForInterval.length - 2];
     const currentCandle = candlesForInterval[candlesForInterval.length - 1]; // pas besoin de boucle ici grâce au socket trading
     if (
-      (currentCandle.supertrend === 1)
+      (currentCandle.supertrend === 1 && previousCandle.supertrend === 0)
     ) {
       await telegram.sendMessage('SuperTrend UP | ' + params.asset1 + params.asset2)
     }
@@ -211,7 +247,7 @@ const superTrendFind = async (candles, params) => {
     if (
       (currentCandle.supertrend === 0)
     ) {
-      await telegram.sendMessage('SuperTrend DOWN | ' + params.asset1 + params.asset2)
+      //await telegram.sendMessage('SuperTrend DOWN | ' + params.asset1 + params.asset2)
     }
 
   }
@@ -229,7 +265,6 @@ const multiIntervalFind = async (candles, params, actualInterval) => {
   let intervals = Object.keys(candles)
   const upperIntervalCandles = candles[intervals[0]]
 
-
   if (params.lowestInterval === actualInterval) {
 
     let candlesForInterval = candles[params.lowestInterval]
@@ -238,19 +273,24 @@ const multiIntervalFind = async (candles, params, actualInterval) => {
     const previousCandle = candlesForInterval[candlesForInterval.length - 2];
     const currentUpperIntervalCandle = upperIntervalCandles[upperIntervalCandles.length - 1]
     //console.log(pair, "previousTrend", previousCandle.supertrend, "currentTrend", currentCandle.supertrend, "currentUpperTrend", currentUpperIntervalCandle.supertrend)
+    //console.table(candlesForInterval)
     if (
-      (currentCandle.supertrend === 1 &&
-        previousCandle.supertrend !== currentCandle.supertrend)
+      (currentCandle.supertrend === 1 && params.inPosition === "0")
     ) {
-      console.log('SuperTrend UP | ' + params.asset1 + params.asset2)
       if (params.signals === "1") {
-        await telegram.sendMessage('SuperTrend UP | ' + params.asset1 + params.asset2)
+        let pourcentageFromLowerBand = calculate.calculateDifference(currentCandle.lowerband, currentCandle.open)
+        if(pourcentageFromLowerBand < 5){
+          console.log('SuperTrend UP | ' + params.asset1 + params.asset2 + " " + pourcentageFromLowerBand)
+          await telegram.sendMessage('SuperTrend UP | ' + params.asset1 + params.asset2 + " " + pourcentageFromLowerBand)
+          console.log(pourcentageFromLowerBand)
+        }
+        params.inPosition = "1"
       }
     }
 
     if (
       (currentCandle.supertrend === 0 &&
-        previousCandle.supertrend !== currentCandle.supertrend)
+        previousCandle.supertrend !== currentCandle.supertrend && params.inPosition === "1")
     ) {
       console.log('SuperTrend DOWN | ' + params.asset1 + params.asset2)
       if (params.signals === "1") {
@@ -264,6 +304,7 @@ const multiIntervalFind = async (candles, params, actualInterval) => {
 };
 
 module.exports = {
+  ichimokuStrategy,
   superTrendEMAStrategy,
   superTrendStrategy,
   multiIntervalStrategy,

@@ -116,3 +116,5 @@
 09-10 22:21 minNotional
 09-10 22:22 Not enough tokens to make order
 09-10 22:22 minNotional
+14-11 16:13 SELL 0.82 AVAX
+30-12 18:9 Invalid API-key, IP, or permissions for action.

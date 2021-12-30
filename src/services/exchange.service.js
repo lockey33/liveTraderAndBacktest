@@ -28,8 +28,9 @@ const getLimitedCandles = async (params, pair, interval) => {
     params.pairBalance = checkPosition.pairBalance
   }
 
-  candles[interval].pop()
-
+  if(params.strategy !== "ichimokuStrategy"){
+    candles.pop()
+  }
   return candles[interval]
 }
 
@@ -119,6 +120,8 @@ const listenToSocket = async (pair, params, dataWithIndicators, targetInterval) 
   const socket = new WebSocket('wss://stream.binance.com:9443/ws/'+pair+'@kline_'+ targetInterval);
   params.i = 0;
   params.pair = pair.toUpperCase()
+  params.inPosition = "0"
+
   dataWithIndicators[targetInterval][dataWithIndicators[targetInterval].length - 1].liveCandle = "1"
   console.log("Listening to :", pair.toUpperCase(), targetInterval, "real :", params.realTrading, "signals :", params.signals, "oneOrderSignalPassed", params.oneOrderSignalPassed)
   socket.onmessage = async(event) => {
@@ -141,15 +144,19 @@ const manageLastCandle = async (dataWithIndicators, params, actualCandle, target
 
   if(actualCandle.k.x === true){
     console.log("candle closed", formatedCandle.openTime, formatedCandle.closeTime, params.pair)
-
+    params.alreadySignaled = "0";
     candles.push(formatedCandle)
     dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
     candles = dataWithIndicators.candles[targetInterval]
     //console.table(candles,['openTime', 'open', 'closeTime', 'close', 'supertrend', 'lowerband', 'upperband']);
     params = dataWithIndicators.params
-    const fileName = `${params.asset1}${params.asset2}`;
+    //const fileName = `${params.asset1}${params.asset2}`;
     //logsManager.writeLogs(fileName, JSON.stringify(candles));
   }/*else{
+    //console.log('here')
+    if(params % 5){
+      params.alreadySignaled = "0";
+    }
     candles[candles.length - 1] = formatedCandle
     dataWithIndicators = await strategy[params.strategy](dataWithIndicators, params, targetInterval);
     candles = dataWithIndicators.candles[targetInterval]
@@ -170,13 +177,11 @@ const getBinanceTime = async (data) => {
 
 
 const backTest = async (coin) => {
-  console.log('HERE COIN', coin)
   let position = coin.inPosition
   const candles = await getHistoricalData(coin);
 
   const results = await backTesting[coin.strategy](candles, coin);
   const pair = results.asset1.asset + results.asset2.asset;
-  console.log('here position', coin.inPosition)
   let filteredResults = {
     inPosition: position,
     asset1: results.asset1.asset,
@@ -207,7 +212,6 @@ const getAllBackTestResults = async (coinList, params) => {
 
   for(const coin of coinList){
     const uniqueParams = JSON.parse(JSON.stringify(params))
-    console.log('params here', params)
     uniqueParams.asset1 = coin.asset1
     uniqueParams.asset2 = coin.asset2
     uniqueParams.inPosition = coin.inPosition
@@ -216,7 +220,6 @@ const getAllBackTestResults = async (coinList, params) => {
       backTestResults.push(object)
     }else{
       let filteredResult = await backTest(uniqueParams)
-      console.log('res', filteredResult)
       finalCapital += filteredResult.amount
       backTestResults.push(filteredResult)
     }

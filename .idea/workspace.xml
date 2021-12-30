@@ -2,10 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59639de6-4571-42ed-a914-babfedbe4feb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liveTrade/findTrending.js" beforeDir="false" afterPath="$PROJECT_DIR$/liveTrade/findTrending.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liveTrade/tradeBestTokens.js" beforeDir="false" afterPath="$PROJECT_DIR$/liveTrade/tradeBestTokens.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/exchange.controller.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/exchange.controller.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/AVAXUSDT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/AVAXUSDT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/BTCUSDT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/BTCUSDT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/ETHUSDT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/ETHUSDT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/SHIBUSDT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/SHIBUSDT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/backTesting.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/backTesting.service.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/exchange.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/exchange.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/indicators.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/indicators.service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/strategy.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/strategy.service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +35,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1xqq409pAWEPjSPVkOUtqId4ntQ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -35,8 +48,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="15.4.0" />
-    <property name="javascript.nodejs.core.library.typings.version" value="15.14.9" />
+    <property name="javascript.nodejs.core.library.configured.version" value="14.18.2" />
+    <property name="javascript.nodejs.core.library.typings.version" value="14.18.2" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
@@ -77,7 +90,12 @@
       <workItem from="1635319883950" duration="903000" />
       <workItem from="1636409144500" duration="1720000" />
       <workItem from="1636547049915" duration="3625000" />
-      <workItem from="1636558167889" duration="3824000" />
+      <workItem from="1636558167889" duration="4173000" />
+      <workItem from="1636653345730" duration="994000" />
+      <workItem from="1639256686897" duration="6464000" />
+      <workItem from="1639325744031" duration="8689000" />
+      <workItem from="1640883804527" duration="903000" />
+      <workItem from="1640886108362" duration="8400000" />
     </task>
     <servers />
   </component>
@@ -94,6 +112,5 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
