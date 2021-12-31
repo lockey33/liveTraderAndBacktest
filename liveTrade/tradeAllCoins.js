@@ -7,7 +7,7 @@ const launch = async () => {
   const exchangeInfos = await axios.get('http://localhost:3000/v1/exchange/exchangeinfos')
   let rankedTokens = await axios.get('http://localhost:3000/v1/exchange/rankedtokens')
   rankedTokens = rankedTokens.data.result
-
+  rankedTokens = rankedTokens.slice(0,100)
 
   for (const token of rankedTokens) {
     const params = {
