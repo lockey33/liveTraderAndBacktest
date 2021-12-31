@@ -20,15 +20,15 @@ const launch = async () => {
   rankedTokens = rankedTokens.slice(0,50)
 
   const params = {
-    interval: '1m',
+    interval: '1d',
     limit: '1000',
     realTrading: "0",
     signals: '1',
     formatIndex: '1',
     //strategy: 'multiIntervalStrategy',
-    strategy: 'ichimokuStrategy',
-    startTime: "01-12-2021 01:00",
-    endTime: "01-03-2021 09:00",
+    strategy: 'superTrendStrategy',
+    startTime: "01-05-2021 01:00",
+    endTime: "30-12-2021 09:00",
     candleFusion: "1",
     buyAtStart: "0",
     minimumProfit: "30",
