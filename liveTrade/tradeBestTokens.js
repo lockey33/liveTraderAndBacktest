@@ -27,7 +27,7 @@ const launch = async () => {
     formatIndex: '1',
     //strategy: 'multiIntervalStrategy',
     strategy: 'superTrendStrategy',
-    startTime: "01-05-2021 01:00",
+    startTime: "01-01-2021 01:00",
     endTime: "30-12-2021 09:00",
     candleFusion: "1",
     buyAtStart: "0",
