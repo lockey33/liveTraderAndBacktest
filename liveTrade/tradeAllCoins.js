@@ -11,7 +11,7 @@ const launch = async () => {
 
   for (const token of rankedTokens) {
     const params = {
-      interval: '1h',
+      interval: '4h',
       limit: '1000',
       realTrading: "0",
       signals: '1',

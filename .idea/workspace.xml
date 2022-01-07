@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59639de6-4571-42ed-a914-babfedbe4feb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/liveTrade/tradeAllCoins.js" beforeDir="false" afterPath="$PROJECT_DIR$/liveTrade/tradeAllCoins.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -83,7 +84,9 @@
       <workItem from="1639325744031" duration="8689000" />
       <workItem from="1640883804527" duration="903000" />
       <workItem from="1640886108362" duration="9506000" />
-      <workItem from="1640943035795" duration="1088000" />
+      <workItem from="1640943035795" duration="2010000" />
+      <workItem from="1640957519892" duration="20000" />
+      <workItem from="1641580428968" duration="13000" />
     </task>
     <servers />
   </component>
