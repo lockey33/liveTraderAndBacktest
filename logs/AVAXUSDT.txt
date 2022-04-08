@@ -118,5 +118,4 @@
 09-10 22:22 minNotional
 14-11 16:13 SELL 0.82 AVAX
 30-12 18:9 Invalid API-key, IP, or permissions for action.
-08-01 18:2 Invalid API-key, IP, or permissions for action.
-08-01 18:7 SELL 1.31 AVAX
+31-12 10:53 Invalid API-key, IP, or permissions for action.
