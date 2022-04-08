@@ -82,7 +82,7 @@ const newOrder = async (orderParams, globalParams) => {
 
   } catch (err) {
     console.log("error on pair", pair);
-    //await telegram.sendMessage(err.toString())
+    await telegram.sendMessage(err.toString())
     logsManager.writeLogs(fileName, `${err.response.data.msg.toString()}`);
   }
 

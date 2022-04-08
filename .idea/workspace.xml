@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59639de6-4571-42ed-a914-babfedbe4feb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/liveTrade/tradeAllCoins.js" beforeDir="false" afterPath="$PROJECT_DIR$/liveTrade/tradeAllCoins.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/liveTrade/tradeBestTokens.js" beforeDir="false" afterPath="$PROJECT_DIR$/liveTrade/tradeBestTokens.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/AVAXUSDT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/AVAXUSDT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/ETHUSDT.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/ETHUSDT.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/order.service.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/order.service.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +90,11 @@
       <workItem from="1640886108362" duration="9506000" />
       <workItem from="1640943035795" duration="2010000" />
       <workItem from="1640957519892" duration="20000" />
-      <workItem from="1641580428968" duration="13000" />
+      <workItem from="1641580428968" duration="533000" />
+      <workItem from="1641661065124" duration="1637000" />
+      <workItem from="1641736358848" duration="28000" />
+      <workItem from="1647892191604" duration="612000" />
+      <workItem from="1649428787658" duration="79000" />
     </task>
     <servers />
   </component>

@@ -3,3 +3,7 @@
 09-10 21:4 BUY 0.0103 ETH
 10-11 16:47 SELL 0.022 ETH
 11-11 18:58 SELL 0.0205 ETH
+08-01 17:59 Invalid API-key, IP, or permissions for action.
+08-01 18:2 Invalid API-key, IP, or permissions for action.
+08-01 18:3 Invalid API-key, IP, or permissions for action.
+08-01 18:7 SELL 0.0263 ETH
